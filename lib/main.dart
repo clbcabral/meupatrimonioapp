@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:meupatrimonio/widgets/patrimonio.dart';
-
+import 'package:meupatrimonio/pages/patrimonio.dart';
 
 void main() {
   runApp(MeuPatrimonioApp());
 }
 
 class MeuPatrimonioApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,4 +19,3 @@ class MeuPatrimonioApp extends StatelessWidget {
     );
   }
 }
-

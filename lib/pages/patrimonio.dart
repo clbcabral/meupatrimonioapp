@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:meupatrimonio/models/ativo.dart';
+import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:meupatrimonio/widgets/menu-lateral.dart';
+import 'package:meupatrimonio/pages/menuLateral.dart';
 
 class PatrimonioWidget extends StatefulWidget {
   final String title;
@@ -10,6 +13,27 @@ class PatrimonioWidget extends StatefulWidget {
 }
 
 class PatrimonioState extends State<PatrimonioWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // teste();
+  }
+
+  // void teste() async {
+  //   Ativo ativo = Ativo(
+  //       id: '1',
+  //       cotacao: 1.0,
+  //       nome: 'foobar',
+  //       quantidade: 1,
+  //       ticker: 'fuba3',
+  //       tipo: ATIVO_ACAO);
+  //   List<Future> dataFutures = [];
+  //   dataFutures.add(ServicoBancoLocal().adicionarAtivo(ativo));
+  //   dataFutures.add(ServicoBancoLocal().listarAtivos(ATIVO_ACAO));
+  //   List<dynamic> data = await Future.wait(dataFutures);
+  //   print(data);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
