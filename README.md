@@ -1,6 +1,6 @@
-# meupatrimonio
+# Meu Patrimonio App
 
-A new Flutter project.
+Simples aplicativo para registro e acompanhamento dos seus ativos financeiros.
 
 ## Getting Started
 
