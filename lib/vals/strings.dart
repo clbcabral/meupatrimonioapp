@@ -14,4 +14,5 @@ class Strings {
   static String revervaOportunidade = "Reserva de Oportunidade";
   static String reservaEmergencia = "Reserva de Emergência";
   static String dividas = "Dívidas";
+  static String carregando = "Carregando...";
 }

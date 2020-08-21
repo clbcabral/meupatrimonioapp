@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:meupatrimonio/pages/patrimonio.dart';
+import 'package:meupatrimonio/pages/home/patrimonio.dart';
 
 void main() {
   runApp(MeuPatrimonioApp());
@@ -15,7 +15,7 @@ class MeuPatrimonioApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: PatrimonioWidget(title: Strings.meuPatrimonio),
+      home: PatrimonioWidget(),
     );
   }
 }

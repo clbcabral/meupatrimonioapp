@@ -1,5 +1,6 @@
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/divida.dart';
+import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:sqflite/sqflite.dart';
@@ -38,6 +39,10 @@ class ServicoBancoLocal {
         'model': Reserva.exemplo(),
         'primaryKey': 'id',
       },
+      'objetivos': {
+        'model': Objetivo.exemplo(),
+        'primaryKey': 'id',
+      },
     };
 
     Batch batch = db.batch();
@@ -55,6 +60,17 @@ class ServicoBancoLocal {
       print(query);
       batch.execute('CREATE TABLE $nomeTabela($query)');
     });
+
+    batch.execute(
+        'INSERT INTO objetivos (ID, NOME, TIPO, PERCENTUAL, VALOR, ORDEM) VALUES ' +
+            '(1, "Ações", "ACAO", 0.0, 0.0, 1),' +
+            '(2, "FIIs", "FII", 0.0, 0.0, 2),' +
+            '(3, "Renda Fixa", "RF", 0.0, 0.0, 3),' +
+            '(4, "Stocks", "STOCK", 0.0, 0.0, 4),' +
+            '(5, "REITs", "REIT", 0.0, 0.0, 5),' +
+            '(6, "Reserva de Emergência", "EMERGENCIA", 0.0, 0.0, 6),' +
+            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 0.0, 0.0, 7),' +
+            '(8, "Reserva de Valor", "VALOR", 0.0, 0.0, 8)');
 
     await batch.commit();
   }
@@ -94,5 +110,16 @@ class ServicoBancoLocal {
   Future adicionarAtivo(Ativo ativo) async {
     Database db = await this.db;
     await db.insert('ativos', ativo.toMap());
+  }
+
+  Future<List<Objetivo>> listarObjetivos() async {
+    Database db = await this.db;
+    return db
+        .query(
+          'objetivos',
+          orderBy: 'ordem ASC',
+        )
+        .then((objetivos) =>
+            objetivos.map((map) => Objetivo.fromMap(map)).toList());
   }
 }
