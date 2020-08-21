@@ -63,12 +63,12 @@ class ServicoBancoLocal {
 
     batch.execute(
         'INSERT INTO objetivos (ID, NOME, TIPO, PERCENTUAL, VALOR, ORDEM) VALUES ' +
-            '(1, "Ações", "ACAO", 0.0, 0.0, 1),' +
-            '(2, "FIIs", "FII", 0.0, 0.0, 2),' +
-            '(3, "Renda Fixa", "RF", 0.0, 0.0, 3),' +
-            '(4, "Stocks", "STOCK", 0.0, 0.0, 4),' +
-            '(5, "REITs", "REIT", 0.0, 0.0, 5),' +
-            '(6, "Reserva de Emergência", "EMERGENCIA", 0.0, 0.0, 6),' +
+            '(1, "Reserva de Emergência", "EMERGENCIA", 0.0, 0.0, 1),' +
+            '(2, "Ações", "ACAO", 0.0, 0.0, 2),' +
+            '(3, "FIIs", "FII", 0.0, 0.0, 3),' +
+            '(4, "Renda Fixa", "RF", 0.0, 0.0, 4),' +
+            '(5, "Stocks", "STOCK", 0.0, 0.0, 5),' +
+            '(6, "REITs", "REIT", 0.0, 0.0, 6),' +
             '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 0.0, 0.0, 7),' +
             '(8, "Reserva de Valor", "VALOR", 0.0, 0.0, 8)');
 
@@ -121,5 +121,12 @@ class ServicoBancoLocal {
         )
         .then((objetivos) =>
             objetivos.map((map) => Objetivo.fromMap(map)).toList());
+  }
+
+  Future<List<Divida>> listarDividas() async {
+    Database db = await this.db;
+    return db
+        .query('dividas')
+        .then((dividas) => dividas.map((map) => Divida.fromMap(map)).toList());
   }
 }

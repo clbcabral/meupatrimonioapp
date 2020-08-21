@@ -1,3 +1,5 @@
+import 'package:meupatrimonio/vals/constantes.dart';
+
 class Objetivo {
   String id;
   String nome;
@@ -14,6 +16,16 @@ class Objetivo {
     this.valor,
     this.ordem,
   });
+
+  bool ehUmAtivo() {
+    return [ATIVO_ACAO, ATIVO_FII, ATIVO_RF, ATIVO_STOCK, ATIVO_REIT]
+        .contains(this.tipo);
+  }
+
+  bool ehUmaReserva() {
+    return [REVERSA_EMERGENCIA, REVERSA_OPORTUNIDADE, REVERSA_VALOR]
+        .contains(this.tipo);
+  }
 
   Objetivo.vazio() {
     id = null;

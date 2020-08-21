@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:meupatrimonio/models/ativo.dart';
+import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
-import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:intl/intl.dart';
 
 class PatrimonioWidget extends StatefulWidget {
   @override
@@ -15,6 +15,8 @@ class PatrimonioWidget extends StatefulWidget {
 
 class PatrimonioState extends State<PatrimonioWidget> {
   List<Objetivo> _objetivos;
+  List<Divida> _dividas;
+  final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
 
   @override
   void initState() {
@@ -23,9 +25,14 @@ class PatrimonioState extends State<PatrimonioWidget> {
   }
 
   void buscarDados() async {
-    List<dynamic> data = await ServicoBancoLocal().listarObjetivos();
+    List<Future> operacoes = [
+      ServicoBancoLocal().listarObjetivos(),
+      ServicoBancoLocal().listarDividas(),
+    ];
+    List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      _objetivos = data;
+      _objetivos = data[0];
+      _dividas = data[1];
     });
   }
 
@@ -39,8 +46,12 @@ class PatrimonioState extends State<PatrimonioWidget> {
           title: Text(Strings.meuPatrimonio),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: Icon(Icons.help),
               onPressed: () => {},
+            ),
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () => buscarDados(),
             ),
           ],
           bottom: TabBar(
@@ -74,10 +85,31 @@ class PatrimonioState extends State<PatrimonioWidget> {
     );
   }
 
+  double calcularDividas() {
+    if (_dividas == null) {
+      return 0.0;
+    }
+    return _dividas.fold(0.0, (val, divida) => val + divida.valor);
+  }
+
+  double calcularSubTotal() {
+    if (_objetivos == null) {
+      return 0.0;
+    }
+    return _objetivos.fold(0.0, (val, objetivo) => val + objetivo.valor);
+  }
+
+  double calcularTotal() {
+    double dividas = calcularDividas();
+    double subtotal = calcularSubTotal();
+    return (subtotal - dividas).abs();
+  }
+
   Widget corpoPatrimonio() {
     if (_objetivos == null) {
       return Container();
     }
+    double subtotal = calcularSubTotal();
     return ListView.builder(
       itemCount: 1,
       itemBuilder: (context, index) {
@@ -86,10 +118,8 @@ class PatrimonioState extends State<PatrimonioWidget> {
           content: Column(
             children: _objetivos.map<Widget>((objetivo) {
               return ItemPatrimonio(
-                titulo: objetivo.nome,
-                valor: objetivo.valor,
-                icone: Icons.attach_money,
-                tipo: objetivo.tipo,
+                subtotal: subtotal,
+                objetivo: objetivo,
               );
             }).toList(),
           ),
@@ -111,15 +141,15 @@ class PatrimonioState extends State<PatrimonioWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Dívidas',
-                style: const TextStyle(
+                Strings.dividas,
+                style: TextStyle(
                   color: Colors.white38,
                   fontSize: 12,
                 ),
               ),
               Text(
-                'R\$ ${0.0}',
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                _formatador.format(calcularDividas()),
+                style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ],
           ),
@@ -127,15 +157,15 @@ class PatrimonioState extends State<PatrimonioWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Total',
+                Strings.total,
                 style: const TextStyle(
                   color: Colors.white38,
                   fontSize: 12,
                 ),
               ),
               Text(
-                'R\$ ${0.0}',
-                style: const TextStyle(color: Colors.white, fontSize: 26),
+                _formatador.format(calcularTotal()),
+                style: const TextStyle(color: Colors.white, fontSize: 20),
               ),
             ],
           ),
@@ -143,15 +173,15 @@ class PatrimonioState extends State<PatrimonioWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Sub-total',
+                Strings.subtotal,
                 style: const TextStyle(
                   color: Colors.white38,
                   fontSize: 12,
                 ),
               ),
               Text(
-                'R\$ ${0.0}',
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                _formatador.format(calcularSubTotal()),
+                style: const TextStyle(color: Colors.white, fontSize: 14),
               ),
             ],
           ),
