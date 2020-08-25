@@ -20,4 +20,17 @@ class Strings {
   static String carregando = "Carregando...";
   static String adicionarItem = "Adicionar item";
   static String editarItem = "Editar item";
+  static String descricao = "Descrição";
+  static String avisoRemover = "Deseja realmente remover o item?";
+  static String validacaoNome = "Informe o nome.";
+  static String validacaoValor = "Informe o valor.";
+  static String validacaoCasasDecimais =
+      "Apenas duas casas decimais são aceitas.";
+  static String validacaoPontoVirgula = "Utilize ponto ao invés de vírgula.";
+  static String valor = "Valor";
+  static String salvar = "Salvar";
+  static String adicionar = "Adicionar";
+  static String cancelar = "Cancelar";
+  static String confirmar = "Confirmar";
+  static String atencao = "Atenção";
 }

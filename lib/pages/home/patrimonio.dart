@@ -31,6 +31,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
+      print(data);
       _objetivos = data[0];
       _dividas = data[1];
     });
@@ -120,6 +121,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
               return ItemPatrimonio(
                 subtotal: subtotal,
                 objetivo: objetivo,
+                callback: buscarDados,
               );
             }).toList(),
           ),

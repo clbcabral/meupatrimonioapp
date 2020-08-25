@@ -57,7 +57,6 @@ class ServicoBancoLocal {
         query += ', ';
       }
       query = query.substring(0, query.length - 2);
-      print(query);
       batch.execute('CREATE TABLE $nomeTabela($query)');
     });
 
@@ -128,5 +127,30 @@ class ServicoBancoLocal {
     return db
         .query('dividas')
         .then((dividas) => dividas.map((map) => Divida.fromMap(map)).toList());
+  }
+
+  Future<List<Reserva>> listarReservas(String tipo) async {
+    Database db = await this.db;
+    return db.query(
+      'reservas',
+      where: 'tipo = ?',
+      whereArgs: [tipo],
+    ).then((reservas) => reservas.map((map) => Reserva.fromMap(map)).toList());
+  }
+
+  Future adicionarReserva(Reserva reserva) async {
+    Database db = await this.db;
+    await db.insert('reservas', reserva.toMap());
+  }
+
+  Future atualizarReserva(Reserva reserva) async {
+    Database db = await this.db;
+    await db.update('reservas', reserva.toMap(),
+        where: 'id = ?', whereArgs: [reserva.id]);
+  }
+
+  Future removerReserva(Reserva reserva) async {
+    Database db = await this.db;
+    await db.delete('reservas', where: 'id = ?', whereArgs: [reserva.id]);
   }
 }

@@ -4,13 +4,15 @@ import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/pages/reserva/reservas.dart';
 
 class ItemPatrimonio extends StatelessWidget {
+  final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
   final double subtotal;
   final Objetivo objetivo;
-  final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
+  final Function callback;
 
   ItemPatrimonio({
     this.subtotal,
     this.objetivo,
+    this.callback,
   });
 
   @override
@@ -23,7 +25,7 @@ class ItemPatrimonio extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
         child: ListTile(
-          onTap: () {
+          onTap: () async {
             if (this.objetivo.ehUmaReserva()) {
               Navigator.push(
                 context,
@@ -32,7 +34,7 @@ class ItemPatrimonio extends StatelessWidget {
                           titulo: this.objetivo.nome,
                           tipo: this.objetivo.tipo,
                         )),
-              );
+              ).then((value) => callback());
             }
             print('clicou: ' + this.objetivo.tipo);
           },

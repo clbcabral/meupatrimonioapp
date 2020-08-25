@@ -11,13 +11,6 @@ class Reserva {
     this.tipo,
   });
 
-  Reserva.vazio() {
-    id = null;
-    nome = null;
-    valor = null;
-    tipo = null;
-  }
-
   Reserva.exemplo() {
     id = '';
     nome = '';
@@ -55,5 +48,15 @@ class Reserva {
       valor: this.valor,
       tipo: this.tipo,
     );
+  }
+
+  @override
+  String toString() {
+    return {
+      'id': id,
+      'nome': nome,
+      'valor': valor,
+      'tipo': tipo,
+    }.toString();
   }
 }
