@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
+import 'package:meupatrimonio/pages/ativo/ativos.dart';
 import 'package:meupatrimonio/pages/reserva/reservas.dart';
 
 class ItemPatrimonio extends StatelessWidget {
@@ -26,14 +27,22 @@ class ItemPatrimonio extends StatelessWidget {
         margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
         child: ListTile(
           onTap: () async {
+            Widget widgetRota;
             if (this.objetivo.ehUmaReserva()) {
+              widgetRota = ReservasWidget(
+                titulo: this.objetivo.nome,
+                tipo: this.objetivo.tipo,
+              );
+            } else if (this.objetivo.ehUmAtivo()) {
+              widgetRota = AtivosWidget(
+                titulo: this.objetivo.nome,
+                tipo: this.objetivo.tipo,
+              );
+            }
+            if (widgetRota != null) {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => ReservasWidget(
-                          titulo: this.objetivo.nome,
-                          tipo: this.objetivo.tipo,
-                        )),
+                MaterialPageRoute(builder: (context) => widgetRota),
               ).then((value) => callback());
             }
             print('clicou: ' + this.objetivo.tipo);
@@ -51,7 +60,7 @@ class ItemPatrimonio extends StatelessWidget {
           subtitle: Text(
               '${formatador.format(cumprido)} de ${formatador.format(this.objetivo.percentual)}'),
           trailing: Text(
-            _formatador.format(this.objetivo.valor),
+            _formatador.format(this.objetivo.sumValores ?? 0),
             style: TextStyle(
               color: this.objetivo.valor > 0.0 ? Colors.green : Colors.black,
               fontSize: 15,

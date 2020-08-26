@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:meupatrimonio/models/reserva.dart';
-import 'package:meupatrimonio/pages/reserva/formReserva.dart';
-import 'package:meupatrimonio/pages/reserva/itemReserva.dart';
+import 'package:meupatrimonio/models/ativo.dart';
+import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
-class ReservasWidget extends StatefulWidget {
+class AtivosWidget extends StatefulWidget {
   final String titulo;
   final String tipo;
-  ReservasWidget({Key key, this.titulo, this.tipo}) : super(key: key);
+  AtivosWidget({
+    this.titulo,
+    this.tipo,
+  });
   @override
-  ReservasState createState() => ReservasState();
+  AtivosState createState() => AtivosState();
 }
 
-class ReservasState extends State<ReservasWidget> {
+class AtivosState extends State<AtivosWidget> {
   final _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
-  List<Reserva> _reservas = [];
+  List<Ativo> _ativos = [];
 
   @override
   void initState() {
@@ -26,18 +28,17 @@ class ReservasState extends State<ReservasWidget> {
   }
 
   void buscarDados() async {
-    List<Reserva> reservas =
-        await ServicoBancoLocal().listarReservas(widget.tipo);
+    List<Ativo> ativos = await ServicoBancoLocal().listarAtivos(widget.tipo);
     setState(() {
-      _reservas = reservas;
+      _ativos = ativos;
     });
   }
 
   double calcularTotal() {
-    if (_reservas == null) {
+    if (_ativos == null) {
       return 0.0;
     }
-    return _reservas.fold(0.0, (val, reserva) => val + reserva.valor);
+    return _ativos.fold(0.0, (val, ativo) => val + ativo.valor());
   }
 
   @override
@@ -59,10 +60,10 @@ class ReservasState extends State<ReservasWidget> {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  Reserva reserva = Reserva.exemplo();
-                  reserva.tipo = widget.tipo;
-                  return ReservaForm(
-                    reserva: reserva,
+                  Ativo ativo = Ativo.exemplo();
+                  ativo.tipo = widget.tipo;
+                  return AtivoForm(
+                    ativo: ativo,
                     callback: buscarDados,
                   );
                 },
@@ -74,7 +75,7 @@ class ReservasState extends State<ReservasWidget> {
   }
 
   Widget corpo(BuildContext context) {
-    if (_reservas == null || _reservas.isEmpty) {
+    if (_ativos == null || _ativos.isEmpty) {
       return Container(
         child: Center(
           child: Text(Strings.dicaAdicionar),
@@ -105,12 +106,13 @@ class ReservasState extends State<ReservasWidget> {
             ),
           ),
           content: Column(
-            children: _reservas.map<Widget>((item) {
+            children: _ativos.map<Widget>((item) {
               return Container(
-                child: ItemReserva(
-                  reserva: item,
-                  callback: buscarDados,
-                ),
+                child: Text(item.nome),
+                // child: ItemReserva(
+                //   reserva: item,
+                //   callback: buscarDados,
+                // ),
               );
             }).toList(),
           ),

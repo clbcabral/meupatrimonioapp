@@ -9,12 +9,6 @@ class Divida {
     this.valor,
   });
 
-  Divida.vazio() {
-    id = null;
-    nome = null;
-    valor = null;
-  }
-
   Divida.exemplo() {
     id = '';
     nome = '';

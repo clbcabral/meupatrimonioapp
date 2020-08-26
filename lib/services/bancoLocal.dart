@@ -50,6 +50,9 @@ class ServicoBancoLocal {
     tabelas.forEach((nomeTabela, dados) async {
       String query = '';
       for (MapEntry<String, dynamic> coluna in dados['model'].toMap().entries) {
+        if (coluna.key.startsWith('sum')) {
+          continue;
+        }
         query += '${coluna.key} ${getTipoNaDB(coluna.value)}';
         if (coluna.key == dados['primaryKey']) {
           query += ' PRIMARY KEY';
@@ -96,14 +99,11 @@ class ServicoBancoLocal {
 
   Future<List<Ativo>> listarAtivos(String tipo) async {
     Database db = await this.db;
-    return db
-        .query(
-          'ativos',
-          where: 'tipo = ?',
-          whereArgs: [tipo],
-          orderBy: 'id DESC',
-        )
-        .then((acoes) => acoes.map((map) => Ativo.fromMap(map)).toList());
+    return db.query(
+      'ativos',
+      where: 'tipo = ?',
+      whereArgs: [tipo],
+    ).then((ativos) => ativos.map((map) => Ativo.fromMap(map)).toList());
   }
 
   Future adicionarAtivo(Ativo ativo) async {
@@ -111,13 +111,25 @@ class ServicoBancoLocal {
     await db.insert('ativos', ativo.toMap());
   }
 
+  Future atualizarAtivo(Ativo ativo) async {
+    Database db = await this.db;
+    await db.update('ativos', ativo.toMap(),
+        where: 'id = ?', whereArgs: [ativo.id]);
+  }
+
+  Future removerAtivo(Ativo ativo) async {
+    Database db = await this.db;
+    await db.delete('ativos', where: 'id = ?', whereArgs: [ativo.id]);
+  }
+
   Future<List<Objetivo>> listarObjetivos() async {
     Database db = await this.db;
     return db
-        .query(
-          'objetivos',
-          orderBy: 'ordem ASC',
-        )
+        .rawQuery('SELECT o.*, ' +
+            'IFNULL((select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o.tipo), ' +
+            '      (select sum(r.valor) from reservas r where r.tipo = o.tipo)) as sumValores ' +
+            'FROM objetivos o ' +
+            'ORDER BY o.ordem ASC')
         .then((objetivos) =>
             objetivos.map((map) => Objetivo.fromMap(map)).toList());
   }

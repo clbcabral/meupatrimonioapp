@@ -9,6 +9,7 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'package:intl/intl.dart';
 
 class PatrimonioWidget extends StatefulWidget {
+  PatrimonioWidget({Key key}) : super(key: key);
   @override
   PatrimonioState createState() => PatrimonioState();
 }
@@ -31,7 +32,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      print(data);
       _objetivos = data[0];
       _dividas = data[1];
     });
@@ -97,7 +97,8 @@ class PatrimonioState extends State<PatrimonioWidget> {
     if (_objetivos == null) {
       return 0.0;
     }
-    return _objetivos.fold(0.0, (val, objetivo) => val + objetivo.valor);
+    return _objetivos.fold(
+        0.0, (val, objetivo) => val + (objetivo.sumValores ?? 0));
   }
 
   double calcularTotal() {

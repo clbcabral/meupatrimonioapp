@@ -7,6 +7,7 @@ class Objetivo {
   double percentual;
   double valor;
   int ordem;
+  double sumValores;
 
   Objetivo({
     this.id,
@@ -27,15 +28,6 @@ class Objetivo {
         .contains(this.tipo);
   }
 
-  Objetivo.vazio() {
-    id = null;
-    nome = null;
-    tipo = null;
-    percentual = null;
-    valor = null;
-    ordem = null;
-  }
-
   Objetivo.exemplo() {
     id = '';
     nome = '';
@@ -43,6 +35,7 @@ class Objetivo {
     percentual = 0.0;
     valor = 0.0;
     ordem = 0;
+    sumValores = 0.0;
   }
 
   Objetivo.fromMap(Map<String, dynamic> map) {
@@ -52,6 +45,7 @@ class Objetivo {
     this.percentual = map['percentual'];
     this.valor = map['valor'];
     this.ordem = map['ordem'];
+    this.sumValores = map['sumValores'];
   }
 
   Map<String, dynamic> toMap() {
@@ -62,6 +56,7 @@ class Objetivo {
       'percentual': percentual,
       'valor': valor,
       'ordem': ordem,
+      'sumValores': sumValores,
     };
   }
 
@@ -94,6 +89,7 @@ class Objetivo {
       'percentual': percentual,
       'valor': valor,
       'ordem': ordem,
+      'sumValores': sumValores,
     }.toString();
   }
 }

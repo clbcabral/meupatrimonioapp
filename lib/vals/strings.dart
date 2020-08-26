@@ -27,6 +27,7 @@ class Strings {
   static String validacaoCasasDecimais =
       "Apenas duas casas decimais são aceitas.";
   static String validacaoPontoVirgula = "Utilize ponto ao invés de vírgula.";
+  static String validacaoPontos = "Informe apenas um ponto.";
   static String valor = "Valor";
   static String salvar = "Salvar";
   static String adicionar = "Adicionar";

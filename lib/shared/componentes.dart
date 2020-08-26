@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class Loader extends StatelessWidget {
@@ -7,8 +6,10 @@ class Loader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-        child: SpinKitCircle(
-          color: Theme.of(context).accentColor,
+        child: SizedBox(
+          child: CircularProgressIndicator(),
+          width: 60,
+          height: 60,
         ),
       ),
     );
