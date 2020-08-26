@@ -1,10 +1,12 @@
+import 'package:meupatrimonio/vals/constantes.dart';
+
 class Ativo {
   String id;
   String nome;
   String ticker;
   double cotacao;
   double quantidade;
-  double nota;
+  double peso;
   String tipo;
 
   Ativo({
@@ -13,7 +15,7 @@ class Ativo {
     this.ticker,
     this.cotacao,
     this.quantidade,
-    this.nota,
+    this.peso,
     this.tipo,
   });
 
@@ -24,13 +26,17 @@ class Ativo {
     return this.cotacao * this.quantidade;
   }
 
+  bool ehAtivoDolarizado() {
+    return [ATIVO_STOCK, ATIVO_REIT].contains(this.tipo);
+  }
+
   Ativo.exemplo() {
     id = '';
     nome = '';
     ticker = '';
     cotacao = 0.0;
     quantidade = 0.0;
-    nota = 0;
+    peso = 0;
     tipo = '';
   }
 
@@ -40,7 +46,7 @@ class Ativo {
     this.ticker = map['ticker'];
     this.cotacao = map['cotacao'];
     this.quantidade = map['quantidade'];
-    this.nota = map['nota'];
+    this.peso = map['peso'];
     this.tipo = map['tipo'];
   }
 
@@ -51,7 +57,7 @@ class Ativo {
       'ticker': ticker,
       'cotacao': cotacao,
       'quantidade': quantidade,
-      'nota': nota,
+      'peso': peso,
       'tipo': tipo,
     };
   }
@@ -62,7 +68,7 @@ class Ativo {
         this.ticker == ativo.ticker &&
         this.cotacao == ativo.cotacao &&
         this.quantidade == ativo.quantidade &&
-        this.nota == ativo.nota &&
+        this.peso == ativo.peso &&
         this.tipo == ativo.tipo;
   }
 
@@ -73,7 +79,7 @@ class Ativo {
       ticker: this.ticker,
       cotacao: this.cotacao,
       quantidade: this.quantidade,
-      nota: this.nota,
+      peso: this.peso,
       tipo: this.tipo,
     );
   }
@@ -86,7 +92,7 @@ class Ativo {
       'ticker': ticker,
       'cotacao': cotacao,
       'quantidade': quantidade,
-      'nota': nota,
+      'peso': peso,
       'tipo': tipo,
     }.toString();
   }

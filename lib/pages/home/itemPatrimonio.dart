@@ -19,8 +19,9 @@ class ItemPatrimonio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     NumberFormat formatador = NumberFormat.percentPattern();
-    double cumprido =
-        this.objetivo.valor / (this.subtotal > 0 ? this.subtotal : 1);
+    double atual =
+        this.objetivo.sumValores / (this.subtotal > 0 ? this.subtotal : 1);
+    double ideal = this.objetivo.percentual;
     return Padding(
       padding: EdgeInsets.only(top: 5.0),
       child: Card(
@@ -57,12 +58,23 @@ class ItemPatrimonio extends StatelessWidget {
             this.objetivo.nome,
             style: const TextStyle(),
           ),
-          subtitle: Text(
-              '${formatador.format(cumprido)} de ${formatador.format(this.objetivo.percentual)}'),
+          dense: true,
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Ideal: ${formatador.format(ideal)}'),
+              Text(
+                'Atual: ${formatador.format(atual)}',
+                style:
+                    TextStyle(color: atual > ideal ? Colors.red : Colors.green),
+              )
+            ],
+          ),
           trailing: Text(
             _formatador.format(this.objetivo.sumValores ?? 0),
             style: TextStyle(
-              color: this.objetivo.valor > 0.0 ? Colors.green : Colors.black,
+              color:
+                  this.objetivo.sumValores > 0.0 ? Colors.green : Colors.black,
               fontSize: 15,
             ),
           ),

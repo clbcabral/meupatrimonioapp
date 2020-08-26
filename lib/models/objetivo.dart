@@ -28,6 +28,10 @@ class Objetivo {
         .contains(this.tipo);
   }
 
+  bool ehReservaEmergencia() {
+    return REVERSA_EMERGENCIA == this.tipo;
+  }
+
   Objetivo.exemplo() {
     id = '';
     nome = '';

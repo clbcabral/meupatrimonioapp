@@ -7,3 +7,4 @@ const String ATIVO_REIT = "REIT";
 const String REVERSA_EMERGENCIA = "EMERGENCIA";
 const String REVERSA_OPORTUNIDADE = "OPORTUNIDADE";
 const String REVERSA_VALOR = "VALOR";
+const String DOLAR_TICKER = 'BRL=X';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
+import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
@@ -39,6 +40,13 @@ class AtivosState extends State<AtivosWidget> {
       return 0.0;
     }
     return _ativos.fold(0.0, (val, ativo) => val + ativo.valor());
+  }
+
+  double calcularPesos() {
+    if (_ativos == null) {
+      return 0.0;
+    }
+    return _ativos.fold(0.0, (val, ativo) => val + ativo.peso);
   }
 
   @override
@@ -82,6 +90,8 @@ class AtivosState extends State<AtivosWidget> {
         ),
       );
     }
+    double totalAtivos = calcularTotal();
+    double totalPesos = calcularPesos();
     return ListView.builder(
       itemCount: 1,
       itemBuilder: (context, index) {
@@ -108,11 +118,12 @@ class AtivosState extends State<AtivosWidget> {
           content: Column(
             children: _ativos.map<Widget>((item) {
               return Container(
-                child: Text(item.nome),
-                // child: ItemReserva(
-                //   reserva: item,
-                //   callback: buscarDados,
-                // ),
+                child: ItemAtivo(
+                  ativo: item,
+                  totalAtivos: totalAtivos,
+                  totalPesos: totalPesos,
+                  callback: buscarDados,
+                ),
               );
             }).toList(),
           ),

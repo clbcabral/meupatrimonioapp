@@ -5,6 +5,7 @@ import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
 import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,12 +19,13 @@ class AtivoForm extends StatefulWidget {
 }
 
 class AtivoFormState extends State<AtivoForm> {
-  final _chave = GlobalKey<FormState>();
+  final _chaveScaffold = GlobalKey<ScaffoldState>();
+  final _chaveForm = GlobalKey<FormState>();
   final _tickerController = TextEditingController();
   final _quantidadeController = TextEditingController();
   String _ticker;
   String _quantidade;
-  double _nota;
+  double _peso;
   String _tipo;
   bool _carregando = false;
 
@@ -32,14 +34,17 @@ class AtivoFormState extends State<AtivoForm> {
     super.initState();
     _ticker = widget.ativo.ticker;
     _quantidade = widget.ativo.quantidade.toString();
-    _nota = widget.ativo.quantidade;
+    _peso = widget.ativo.peso;
     _tipo = widget.ativo.tipo;
+    _tickerController.text = widget.ativo.ticker;
+    _quantidadeController.text = widget.ativo.quantidade.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     bool ehEdicao = widget.ativo.id.isNotEmpty;
     return Scaffold(
+        key: _chaveScaffold,
         appBar: AppBar(
           title: Text(ehEdicao ? Strings.editarItem : Strings.adicionarItem),
           actions: ehEdicao
@@ -75,7 +80,7 @@ class AtivoFormState extends State<AtivoForm> {
             ),
           )
         : Form(
-            key: _chave,
+            key: _chaveForm,
             autovalidate: true,
             child: ListView(
               padding: EdgeInsets.symmetric(
@@ -94,7 +99,7 @@ class AtivoFormState extends State<AtivoForm> {
                   },
                   decoration: InputDecoration(
                     labelText: 'Ticker',
-                    hintText: 'ex: ITSA3.SA',
+                    hintText: getTickerHint(),
                   ),
                   textCapitalization: TextCapitalization.characters,
                   onChanged: (val) {
@@ -130,14 +135,14 @@ class AtivoFormState extends State<AtivoForm> {
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     )),
                 Slider(
-                  value: _nota,
+                  value: _peso,
                   min: 0,
                   max: 10,
                   divisions: 10,
-                  label: _nota.round().toString(),
+                  label: _peso.round().toString(),
                   onChanged: (double value) {
                     setState(() {
-                      _nota = value;
+                      _peso = value;
                     });
                   },
                 ),
@@ -148,40 +153,69 @@ class AtivoFormState extends State<AtivoForm> {
                     ehEdicao ? Strings.salvar : Strings.adicionar,
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: () async {
-                    if (!_chave.currentState.validate()) {
-                      return;
-                    }
-                    setState(() {
-                      _carregando = true;
-                    });
-                    var response =
-                        await ServicoYahooFinance().getTickersInfo([_ticker]);
-                    List resultado = response['quoteResponse']['result'];
-                    if (resultado != null && resultado.isNotEmpty) {
-                      var dados = resultado[0];
-                      Ativo ativo = Ativo(
-                          id: widget.ativo.id.isNotEmpty
-                              ? widget.ativo.id
-                              : Uuid().v1(),
-                          nome: dados['longName'],
-                          cotacao: dados['bid'],
-                          quantidade: double.parse(_quantidade),
-                          nota: _nota,
-                          tipo: _tipo);
-                      ehEdicao
-                          ? await ServicoBancoLocal().atualizarAtivo(ativo)
-                          : await ServicoBancoLocal().adicionarAtivo(ativo);
-                      Navigator.pop(context);
-                      widget.callback();
-                    } else {}
-                    setState(() {
-                      _carregando = false;
-                    });
-                  },
+                  onPressed: () => salvarAtivo(ehEdicao),
                 ),
               ],
             ),
           );
+  }
+
+  String getTickerHint() {
+    String hint = '';
+    switch (_tipo) {
+      case ATIVO_ACAO:
+        hint = 'ex: ITUB3.SA';
+        break;
+      case ATIVO_FII:
+        hint = 'ex: HGBS11.SA';
+        break;
+      case ATIVO_STOCK:
+        hint = 'ex: AAPL';
+        break;
+      case ATIVO_REIT:
+        hint = 'ex: AMT';
+        break;
+    }
+    return hint;
+  }
+
+  void salvarAtivo(bool ehEdicao) async {
+    if (!_chaveForm.currentState.validate()) {
+      return;
+    }
+    setState(() {
+      _carregando = true;
+    });
+    var tickers =
+        widget.ativo.ehAtivoDolarizado() ? [_ticker, DOLAR_TICKER] : [_ticker];
+    var response = await ServicoYahooFinance().getTickersInfo(tickers);
+    var resultado = response['quoteResponse']['result'];
+    if (resultado == null ||
+        resultado.isEmpty ||
+        resultado[0]['quoteType'] != 'EQUITY') {
+      SnackBar snack = SnackBar(
+        content: Text('Ticker inválido ou não identificado.'),
+      );
+      _chaveScaffold.currentState.showSnackBar(snack);
+    } else {
+      Map dados = resultado[0];
+      double dolar = widget.ativo.ehAtivoDolarizado() ? resultado[1]['bid'] : 1;
+      Ativo ativo = Ativo(
+          id: widget.ativo.id.isNotEmpty ? widget.ativo.id : Uuid().v1(),
+          nome: dados['longName'],
+          cotacao: dados['bid'] * dolar,
+          quantidade: double.parse(_quantidade),
+          ticker: _ticker,
+          peso: _peso,
+          tipo: _tipo);
+      ehEdicao
+          ? await ServicoBancoLocal().atualizarAtivo(ativo)
+          : await ServicoBancoLocal().adicionarAtivo(ativo);
+      Navigator.pop(context);
+      widget.callback();
+    }
+    setState(() {
+      _carregando = false;
+    });
   }
 }

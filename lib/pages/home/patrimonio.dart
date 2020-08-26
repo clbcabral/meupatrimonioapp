@@ -3,6 +3,7 @@ import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:sticky_headers/sticky_headers.dart';

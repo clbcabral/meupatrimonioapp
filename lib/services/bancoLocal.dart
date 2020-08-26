@@ -126,8 +126,8 @@ class ServicoBancoLocal {
     Database db = await this.db;
     return db
         .rawQuery('SELECT o.*, ' +
-            'IFNULL((select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o.tipo), ' +
-            '      (select sum(r.valor) from reservas r where r.tipo = o.tipo)) as sumValores ' +
+            'IFNULL(IFNULL((select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o.tipo), ' +
+            '      (select sum(r.valor) from reservas r where r.tipo = o.tipo)), 0.0) as sumValores ' +
             'FROM objetivos o ' +
             'ORDER BY o.ordem ASC')
         .then((objetivos) =>
