@@ -44,7 +44,10 @@ class ReservasState extends State<ReservasWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.titulo),
+          title: Text(
+            widget.titulo,
+            style: TextStyle(fontSize: 16),
+          ),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.help),
@@ -73,6 +76,28 @@ class ReservasState extends State<ReservasWidget> {
         body: corpo(context));
   }
 
+  Widget cabecalho() {
+    return Container(
+      height: 65.0,
+      color: Colors.black,
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            Strings.total,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          Text(
+            _formatador.format(calcularTotal()),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget corpo(BuildContext context) {
     if (_reservas == null || _reservas.isEmpty) {
       return Container(
@@ -81,41 +106,27 @@ class ReservasState extends State<ReservasWidget> {
         ),
       );
     }
-    return ListView.builder(
-      itemCount: 1,
-      itemBuilder: (context, index) {
-        return StickyHeader(
-          header: Container(
-            height: 75.0,
-            color: Colors.black,
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  Strings.total,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Text(
-                  _formatador.format(calcularTotal()),
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            children: _reservas.map<Widget>((item) {
+    return Column(
+      children: [
+        cabecalho(),
+        Expanded(
+            child: RefreshIndicator(
+          onRefresh: () async {
+            buscarDados();
+          },
+          child: ListView.builder(
+            itemCount: _reservas.length,
+            itemBuilder: (context, index) {
               return Container(
                 child: ItemReserva(
-                  reserva: item,
+                  reserva: _reservas[index],
                   callback: buscarDados,
                 ),
               );
-            }).toList(),
+            },
           ),
-        );
-      },
+        ))
+      ],
     );
   }
 }

@@ -9,7 +9,6 @@ class ItemPatrimonio extends StatelessWidget {
   final double subtotal;
   final Objetivo objetivo;
   final Function callback;
-
   ItemPatrimonio({
     this.subtotal,
     this.objetivo,
@@ -46,7 +45,6 @@ class ItemPatrimonio extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => widgetRota),
               ).then((value) => callback());
             }
-            print('clicou: ' + this.objetivo.tipo);
           },
           contentPadding: EdgeInsets.all(7),
           leading: CircleAvatar(
@@ -59,23 +57,12 @@ class ItemPatrimonio extends StatelessWidget {
             style: const TextStyle(),
           ),
           dense: true,
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Ideal: ${formatador.format(ideal)}'),
-              Text(
-                'Atual: ${formatador.format(atual)}',
-                style:
-                    TextStyle(color: atual > ideal ? Colors.red : Colors.green),
-              )
-            ],
-          ),
           trailing: Text(
             _formatador.format(this.objetivo.sumValores ?? 0),
             style: TextStyle(
               color:
                   this.objetivo.sumValores > 0.0 ? Colors.green : Colors.black,
-              fontSize: 15,
+              fontSize: 14,
             ),
           ),
         ),

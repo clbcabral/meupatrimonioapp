@@ -53,7 +53,10 @@ class AtivosState extends State<AtivosWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.titulo),
+          title: Text(
+            widget.titulo,
+            style: TextStyle(fontSize: 16),
+          ),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.help),
@@ -82,6 +85,28 @@ class AtivosState extends State<AtivosWidget> {
         body: corpo(context));
   }
 
+  Widget cabecalho() {
+    return Container(
+      height: 65.0,
+      color: Colors.black,
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            Strings.total,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          Text(
+            _formatador.format(calcularTotal()),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget corpo(BuildContext context) {
     if (_ativos == null || _ativos.isEmpty) {
       return Container(
@@ -92,43 +117,29 @@ class AtivosState extends State<AtivosWidget> {
     }
     double totalAtivos = calcularTotal();
     double totalPesos = calcularPesos();
-    return ListView.builder(
-      itemCount: 1,
-      itemBuilder: (context, index) {
-        return StickyHeader(
-          header: Container(
-            height: 75.0,
-            color: Colors.black,
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  Strings.total,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Text(
-                  _formatador.format(calcularTotal()),
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          content: Column(
-            children: _ativos.map<Widget>((item) {
+    return Column(
+      children: [
+        cabecalho(),
+        Expanded(
+            child: RefreshIndicator(
+          onRefresh: () async {
+            buscarDados();
+          },
+          child: ListView.builder(
+            itemCount: _ativos.length,
+            itemBuilder: (context, index) {
               return Container(
                 child: ItemAtivo(
-                  ativo: item,
+                  ativo: _ativos[index],
                   totalAtivos: totalAtivos,
                   totalPesos: totalPesos,
                   callback: buscarDados,
                 ),
               );
-            }).toList(),
+            },
           ),
-        );
-      },
+        ))
+      ],
     );
   }
 }

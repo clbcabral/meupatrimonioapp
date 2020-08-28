@@ -134,6 +134,16 @@ class ServicoBancoLocal {
             objetivos.map((map) => Objetivo.fromMap(map)).toList());
   }
 
+  Future atualizarObjetivos(List<Objetivo> objetivos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    objetivos.forEach((objetivo) {
+      batch.update('objetivos', {'percentual': objetivo.percentual},
+          where: 'id = ?', whereArgs: [objetivo.id]);
+    });
+    await batch.commit();
+  }
+
   Future<List<Divida>> listarDividas() async {
     Database db = await this.db;
     return db

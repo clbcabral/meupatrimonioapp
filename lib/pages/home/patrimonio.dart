@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
+import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
-import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 import 'package:intl/intl.dart';
 
 class PatrimonioWidget extends StatefulWidget {
@@ -16,6 +15,7 @@ class PatrimonioWidget extends StatefulWidget {
 }
 
 class PatrimonioState extends State<PatrimonioWidget> {
+  bool _carregando = false;
   List<Objetivo> _objetivos;
   List<Divida> _dividas;
   final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
@@ -33,58 +33,10 @@ class PatrimonioState extends State<PatrimonioWidget> {
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
+      print(data);
       _objetivos = data[0];
       _dividas = data[1];
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        drawer: MenuLateral(),
-        appBar: AppBar(
-          title: Text(Strings.meuPatrimonio),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.help),
-              onPressed: () => {},
-            ),
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () => buscarDados(),
-            ),
-          ],
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                text: Strings.consolidado,
-              ),
-              Tab(
-                text: Strings.graficos,
-              ),
-              Tab(
-                text: Strings.ondeAportar,
-              ),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            Tab(
-              child: corpoPatrimonio(),
-            ),
-            Tab(
-              icon: Icon(Icons.accessible),
-            ),
-            Tab(
-              icon: Icon(Icons.account_balance),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   double calcularDividas() {
@@ -108,33 +60,106 @@ class PatrimonioState extends State<PatrimonioWidget> {
     return (subtotal - dividas).abs();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return (_carregando == true)
+        ? Container(
+            padding: EdgeInsets.all(25),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              drawer: MenuLateral(),
+              appBar: AppBar(
+                title: Text(
+                  Strings.meuPatrimonio,
+                  style: TextStyle(fontSize: 18),
+                ),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.help),
+                    onPressed: () => {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ObjetivosForm(objetivos: _objetivos)),
+                      ).then((value) => buscarDados())
+                    },
+                  ),
+                ],
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      text: Strings.consolidado,
+                    ),
+                    Tab(
+                      text: Strings.graficos,
+                    ),
+                    Tab(
+                      text: Strings.ondeAportar,
+                    ),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                children: [
+                  Tab(
+                    child: corpoPatrimonio(),
+                  ),
+                  Tab(
+                    child: corpoGraficos(),
+                  ),
+                  Tab(
+                    icon: Icon(Icons.account_balance),
+                  ),
+                ],
+              ),
+            ),
+          );
+  }
+
+  Widget corpoGraficos() {
+    return Container(
+      child: Text('Foo'),
+    );
+  }
+
   Widget corpoPatrimonio() {
     if (_objetivos == null) {
       return Container();
     }
     double subtotal = calcularSubTotal();
-    return ListView.builder(
-      itemCount: 1,
-      itemBuilder: (context, index) {
-        return StickyHeader(
-          header: cabecalhoResumoPatrimonio(),
-          content: Column(
-            children: _objetivos.map<Widget>((objetivo) {
-              return ItemPatrimonio(
-                subtotal: subtotal,
-                objetivo: objetivo,
-                callback: buscarDados,
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
+    return Column(children: <Widget>[
+      cabecalhoResumoPatrimonio(),
+      Expanded(
+          child: RefreshIndicator(
+              onRefresh: () async {
+                buscarDados();
+              },
+              child: ListView.builder(
+                itemCount: _objetivos.length,
+                itemBuilder: (context, index) {
+                  return ItemPatrimonio(
+                    subtotal: subtotal,
+                    objetivo: _objetivos[index],
+                    callback: buscarDados,
+                  );
+                },
+              )))
+    ]);
   }
 
   Widget cabecalhoResumoPatrimonio() {
     return Container(
-      height: 75.0,
+      height: 65.0,
       color: Colors.black,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       alignment: Alignment.center,
@@ -142,6 +167,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -153,27 +179,12 @@ class PatrimonioState extends State<PatrimonioWidget> {
               ),
               Text(
                 _formatador.format(calcularDividas()),
-                style: TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                Strings.total,
-                style: const TextStyle(
-                  color: Colors.white38,
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                _formatador.format(calcularTotal()),
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            ],
-          ),
-          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -185,7 +196,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
               ),
               Text(
                 _formatador.format(calcularSubTotal()),
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           ),

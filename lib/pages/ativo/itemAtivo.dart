@@ -46,17 +46,6 @@ class ItemAtivo extends StatelessWidget {
             this.ativo.ticker,
             style: const TextStyle(),
           ),
-          subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Ideal: ${_fmtPct.format(ideal)}'),
-              Text(
-                'Atual: ${_fmtPct.format(atual)}',
-                style:
-                    TextStyle(color: atual > ideal ? Colors.red : Colors.green),
-              )
-            ],
-          ),
           trailing: Text(
             _fmtValor.format(this.ativo.valor()),
             style: TextStyle(

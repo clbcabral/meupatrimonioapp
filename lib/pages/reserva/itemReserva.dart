@@ -31,6 +31,12 @@ class ItemReserva extends StatelessWidget {
             );
           },
           contentPadding: EdgeInsets.all(7),
+          dense: true,
+          leading: CircleAvatar(
+            radius: 25.0,
+            backgroundColor: Theme.of(context).backgroundColor,
+            child: Icon(Icons.account_balance),
+          ),
           title: Text(
             this.reserva.nome,
             style: const TextStyle(),
@@ -39,7 +45,7 @@ class ItemReserva extends StatelessWidget {
             _formatador.format(this.reserva.valor),
             style: TextStyle(
               color: this.reserva.valor > 0.0 ? Colors.green : Colors.black,
-              fontSize: 15,
+              fontSize: 14,
             ),
           ),
         ),
