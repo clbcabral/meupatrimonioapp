@@ -83,6 +83,11 @@ class GraficosState extends State<Graficos> {
   }
 
   Widget corpoGraficos(context, String titulo, charts.Series series) {
+    if (series.data == null || series.data.isEmpty) {
+      return Center(
+        child: Text('Ainda sem dados.'),
+      );
+    }
     return Column(children: [
       SizedBox(
         height: 15,
@@ -134,19 +139,42 @@ class PaginaComTabsWidget extends StatefulWidget {
   final Graficos graficos;
   final bool exibeDrawer;
   final bool carregando;
+  final FloatingActionButton botaoAdicionar;
 
   PaginaComTabsWidget(
       {this.titulo,
       this.acoes,
       this.corpo,
       this.graficos,
+      this.botaoAdicionar,
       this.exibeDrawer,
       this.carregando});
 
   PaginaComTabsState createState() => PaginaComTabsState();
 }
 
-class PaginaComTabsState extends State<PaginaComTabsWidget> {
+class PaginaComTabsState extends State<PaginaComTabsWidget>
+    with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    _tabController.addListener(_handleTabIndex);
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabIndex);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleTabIndex() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return (widget.carregando == true)
@@ -156,43 +184,44 @@ class PaginaComTabsState extends State<PaginaComTabsWidget> {
               child: CircularProgressIndicator(),
             ),
           )
-        : DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              drawer: widget.exibeDrawer ? MenuLateral() : null,
-              appBar: AppBar(
-                title: Text(
-                  widget.titulo,
-                  style: TextStyle(fontSize: 16),
-                ),
-                actions: widget.acoes,
-                bottom: TabBar(
-                  tabs: [
-                    Tab(
-                      text: Strings.consolidado,
-                    ),
-                    Tab(
-                      text: Strings.graficos,
-                    ),
-                    Tab(
-                      text: Strings.ondeAportar,
-                    ),
-                  ],
-                ),
+        : Scaffold(
+            drawer: widget.exibeDrawer ? MenuLateral() : null,
+            appBar: AppBar(
+              title: Text(
+                widget.titulo,
+                style: TextStyle(fontSize: 16),
               ),
-              body: TabBarView(
-                children: [
+              actions: widget.acoes,
+              bottom: TabBar(
+                controller: _tabController,
+                tabs: [
                   Tab(
-                    child: widget.corpo,
+                    text: Strings.consolidado,
                   ),
                   Tab(
-                    child: widget.graficos,
+                    text: Strings.graficos,
                   ),
                   Tab(
-                    icon: Icon(Icons.account_balance),
+                    text: Strings.ondeAportar,
                   ),
                 ],
               ),
+            ),
+            floatingActionButton:
+                _tabController.index == 0 ? widget.botaoAdicionar : null,
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                Tab(
+                  child: widget.corpo,
+                ),
+                Tab(
+                  child: widget.graficos,
+                ),
+                Tab(
+                  icon: Icon(Icons.account_balance),
+                ),
+              ],
             ),
           );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 
 class ItemAtivo extends StatelessWidget {
   final Ativo ativo;
@@ -43,7 +44,7 @@ class ItemAtivo extends StatelessWidget {
           ),
           dense: true,
           title: Text(
-            this.ativo.ticker,
+            this.ativo.descricao(),
             style: const TextStyle(),
           ),
           trailing: Text(

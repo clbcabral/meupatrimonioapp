@@ -21,7 +21,8 @@ class AtivosWidget extends StatefulWidget {
 
 class AtivosState extends State<AtivosWidget> {
   bool _carregando = false;
-  final _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
+  final _fmtValor = NumberFormat.simpleCurrency(locale: 'pt_br');
+  final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 2);
   List<Ativo> _ativos = [];
 
   @override
@@ -53,82 +54,56 @@ class AtivosState extends State<AtivosWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return (_carregando == true)
-        ? Container(
-            padding: EdgeInsets.all(25),
-            child: Center(
-              child: CircularProgressIndicator(),
+    double totalAtivos = calcularTotal();
+    double totalPesos = calcularPesos();
+    return PaginaComTabsWidget(
+      carregando: _carregando,
+      exibeDrawer: false,
+      titulo: widget.titulo,
+      corpo: corpo(context, totalAtivos, totalPesos),
+      graficos: Graficos(
+        seriesA: charts.Series<Ativo, String>(
+          id: 'atual',
+          domainFn: (Ativo obj, _) => obj.descricao(),
+          measureFn: (Ativo obj, _) => obj.valor() / totalAtivos,
+          labelAccessorFn: (Ativo obj, _) =>
+              '${_fmtPct.format(obj.valor() / totalAtivos)}',
+          data: _ativos,
+        ),
+        seriesB: charts.Series<Ativo, String>(
+          id: 'ideal',
+          domainFn: (Ativo obj, _) => obj.descricao(),
+          measureFn: (Ativo obj, _) => obj.peso / totalPesos,
+          labelAccessorFn: (Ativo obj, _) =>
+              '${_fmtPct.format(obj.peso / totalPesos)}',
+          data: _ativos,
+        ),
+      ),
+      botaoAdicionar: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                Ativo ativo = Ativo.exemplo();
+                ativo.tipo = widget.tipo;
+                return AtivoForm(
+                  ativo: ativo,
+                  callback: buscarDados,
+                );
+              },
             ),
           )
-        : DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  widget.titulo,
-                  style: TextStyle(fontSize: 16),
-                ),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(
-                      text: Strings.consolidado,
-                    ),
-                    Tab(
-                      text: Strings.graficos,
-                    ),
-                    Tab(
-                      text: Strings.ondeAportar,
-                    ),
-                  ],
-                ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        Ativo ativo = Ativo.exemplo();
-                        ativo.tipo = widget.tipo;
-                        return AtivoForm(
-                          ativo: ativo,
-                          callback: buscarDados,
-                        );
-                      },
-                    ),
-                  )
-                },
-              ),
-              body: TabBarView(
-                children: [
-                  Tab(
-                    child: corpo(context),
-                  ),
-                  Tab(
-                    child: Graficos(
-                      seriesA: charts.Series<Ativo, String>(
-                        id: 'atual',
-                        domainFn: (Ativo obj, _) => obj.ticker,
-                        measureFn: (Ativo obj, _) => obj.valor(),
-                        labelAccessorFn: (Ativo obj, _) => '${obj.valor()}%',
-                        data: _ativos,
-                      ),
-                      seriesB: charts.Series<Ativo, String>(
-                        id: 'ideal',
-                        domainFn: (Ativo obj, _) => obj.ticker,
-                        measureFn: (Ativo obj, _) => obj.valor(),
-                        labelAccessorFn: (Ativo obj, _) => '${obj.valor()}%',
-                        data: _ativos,
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    icon: Icon(Icons.account_balance),
-                  ),
-                ],
-              ),
-            ));
+        },
+      ),
+      acoes: <Widget>[
+        IconButton(
+          icon: Icon(Icons.help),
+          onPressed: () => {},
+        ),
+      ],
+    );
   }
 
   Widget cabecalho() {
@@ -145,7 +120,7 @@ class AtivosState extends State<AtivosWidget> {
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           Text(
-            _formatador.format(calcularTotal()),
+            _fmtValor.format(calcularTotal()),
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
@@ -153,7 +128,7 @@ class AtivosState extends State<AtivosWidget> {
     );
   }
 
-  Widget corpo(BuildContext context) {
+  Widget corpo(BuildContext context, double totalAtivos, double totalPesos) {
     if (_ativos == null || _ativos.isEmpty) {
       return Container(
         child: Center(
@@ -161,8 +136,6 @@ class AtivosState extends State<AtivosWidget> {
         ),
       );
     }
-    double totalAtivos = calcularTotal();
-    double totalPesos = calcularPesos();
     return Column(
       children: [
         cabecalho(),

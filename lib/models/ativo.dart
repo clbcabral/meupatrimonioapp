@@ -26,6 +26,10 @@ class Ativo {
     return this.cotacao * this.quantidade;
   }
 
+  String descricao() {
+    return this.tipo == ATIVO_RF ? this.nome : this.ticker;
+  }
+
   bool ehAtivoDolarizado() {
     return [ATIVO_STOCK, ATIVO_REIT].contains(this.tipo);
   }

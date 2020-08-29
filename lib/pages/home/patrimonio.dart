@@ -73,6 +73,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
       exibeDrawer: true,
       titulo: Strings.meuPatrimonio,
       corpo: corpoPatrimonio(),
+      botaoAdicionar: null,
       graficos: Graficos(
         seriesA: charts.Series<Objetivo, String>(
           id: 'atual',
