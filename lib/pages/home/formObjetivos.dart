@@ -96,10 +96,10 @@ class ObjetivosFormState extends State<ObjetivosForm> {
                       value: widget.objetivos[index].percentual,
                       min: 0,
                       max: 100,
-                      divisions: 200,
                       onChanged: (double value) {
                         setState(() {
-                          widget.objetivos[index].percentual = value;
+                          widget.objetivos[index].percentual =
+                              value.roundToDouble();
                         });
                       },
                     ),

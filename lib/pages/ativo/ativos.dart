@@ -1,11 +1,12 @@
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:sticky_headers/sticky_headers/widget.dart';
 
 class AtivosWidget extends StatefulWidget {
   final String titulo;
@@ -19,6 +20,7 @@ class AtivosWidget extends StatefulWidget {
 }
 
 class AtivosState extends State<AtivosWidget> {
+  bool _carregando = false;
   final _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
   List<Ativo> _ativos = [];
 
@@ -51,38 +53,82 @@ class AtivosState extends State<AtivosWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.titulo,
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.help),
-              onPressed: () => {},
+    return (_carregando == true)
+        ? Container(
+            padding: EdgeInsets.all(25),
+            child: Center(
+              child: CircularProgressIndicator(),
             ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  Ativo ativo = Ativo.exemplo();
-                  ativo.tipo = widget.tipo;
-                  return AtivoForm(
-                    ativo: ativo,
-                    callback: buscarDados,
-                  );
+          )
+        : DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  widget.titulo,
+                  style: TextStyle(fontSize: 16),
+                ),
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      text: Strings.consolidado,
+                    ),
+                    Tab(
+                      text: Strings.graficos,
+                    ),
+                    Tab(
+                      text: Strings.ondeAportar,
+                    ),
+                  ],
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        Ativo ativo = Ativo.exemplo();
+                        ativo.tipo = widget.tipo;
+                        return AtivoForm(
+                          ativo: ativo,
+                          callback: buscarDados,
+                        );
+                      },
+                    ),
+                  )
                 },
               ),
-            )
-          },
-        ),
-        body: corpo(context));
+              body: TabBarView(
+                children: [
+                  Tab(
+                    child: corpo(context),
+                  ),
+                  Tab(
+                    child: Graficos(
+                      seriesA: charts.Series<Ativo, String>(
+                        id: 'atual',
+                        domainFn: (Ativo obj, _) => obj.ticker,
+                        measureFn: (Ativo obj, _) => obj.valor(),
+                        labelAccessorFn: (Ativo obj, _) => '${obj.valor()}%',
+                        data: _ativos,
+                      ),
+                      seriesB: charts.Series<Ativo, String>(
+                        id: 'ideal',
+                        domainFn: (Ativo obj, _) => obj.ticker,
+                        measureFn: (Ativo obj, _) => obj.valor(),
+                        labelAccessorFn: (Ativo obj, _) => '${obj.valor()}%',
+                        data: _ativos,
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    icon: Icon(Icons.account_balance),
+                  ),
+                ],
+              ),
+            ));
   }
 
   Widget cabecalho() {

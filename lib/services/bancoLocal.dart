@@ -65,14 +65,14 @@ class ServicoBancoLocal {
 
     batch.execute(
         'INSERT INTO objetivos (ID, NOME, TIPO, PERCENTUAL, VALOR, ORDEM) VALUES ' +
-            '(1, "Reserva de Emergência", "EMERGENCIA", 0.0, 0.0, 1),' +
-            '(2, "Ações", "ACAO", 0.0, 0.0, 2),' +
-            '(3, "FIIs", "FII", 0.0, 0.0, 3),' +
-            '(4, "Renda Fixa", "RF", 0.0, 0.0, 4),' +
-            '(5, "Stocks", "STOCK", 0.0, 0.0, 5),' +
-            '(6, "REITs", "REIT", 0.0, 0.0, 6),' +
-            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 0.0, 0.0, 7),' +
-            '(8, "Reserva de Valor", "VALOR", 0.0, 0.0, 8)');
+            '(1, "Reserva de Emergência", "EMERGENCIA", 5.0, 0.0, 1),' +
+            '(2, "Ações", "ACAO", 15.0, 0.0, 2),' +
+            '(3, "FIIs", "FII", 15.0, 0.0, 3),' +
+            '(4, "Renda Fixa", "RF", 30.0, 0.0, 4),' +
+            '(5, "Stocks", "STOCK", 15.0, 0.0, 5),' +
+            '(6, "REITs", "REIT", 15.0, 0.0, 6),' +
+            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 2.5, 0.0, 7),' +
+            '(8, "Reserva de Valor", "VALOR", 2.5, 0.0, 8)');
 
     await batch.commit();
   }

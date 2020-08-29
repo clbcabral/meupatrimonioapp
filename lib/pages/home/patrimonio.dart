@@ -1,11 +1,12 @@
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:intl/intl.dart';
 
 class PatrimonioWidget extends StatefulWidget {
@@ -27,13 +28,18 @@ class PatrimonioState extends State<PatrimonioWidget> {
   }
 
   void buscarDados() async {
+    setState(() {
+      _carregando = true;
+    });
     List<Future> operacoes = [
       ServicoBancoLocal().listarObjetivos(),
       ServicoBancoLocal().listarDividas(),
+      // new Future.delayed(const Duration(seconds: 3), () => "1"),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
       print(data);
+      _carregando = false;
       _objetivos = data[0];
       _dividas = data[1];
     });
@@ -62,73 +68,45 @@ class PatrimonioState extends State<PatrimonioWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return (_carregando == true)
-        ? Container(
-            padding: EdgeInsets.all(25),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              drawer: MenuLateral(),
-              appBar: AppBar(
-                title: Text(
-                  Strings.meuPatrimonio,
-                  style: TextStyle(fontSize: 18),
-                ),
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.help),
-                    onPressed: () => {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ObjetivosForm(objetivos: _objetivos)),
-                      ).then((value) => buscarDados())
-                    },
-                  ),
-                ],
-                bottom: TabBar(
-                  tabs: [
-                    Tab(
-                      text: Strings.consolidado,
-                    ),
-                    Tab(
-                      text: Strings.graficos,
-                    ),
-                    Tab(
-                      text: Strings.ondeAportar,
-                    ),
-                  ],
-                ),
-              ),
-              body: TabBarView(
-                children: [
-                  Tab(
-                    child: corpoPatrimonio(),
-                  ),
-                  Tab(
-                    child: corpoGraficos(),
-                  ),
-                  Tab(
-                    icon: Icon(Icons.account_balance),
-                  ),
-                ],
-              ),
-            ),
-          );
-  }
-
-  Widget corpoGraficos() {
-    return Container(
-      child: Text('Foo'),
+    return PaginaComTabsWidget(
+      carregando: _carregando,
+      exibeDrawer: true,
+      titulo: Strings.meuPatrimonio,
+      corpo: corpoPatrimonio(),
+      graficos: Graficos(
+        seriesA: charts.Series<Objetivo, String>(
+          id: 'atual',
+          domainFn: (Objetivo obj, _) => obj.nome,
+          measureFn: (Objetivo obj, _) => obj.percentual,
+          labelAccessorFn: (Objetivo obj, _) =>
+              '${obj.nome} ${obj.percentual}%',
+          data: _objetivos,
+        ),
+        seriesB: charts.Series<Objetivo, String>(
+          id: 'ideal',
+          domainFn: (Objetivo obj, _) => obj.nome,
+          measureFn: (Objetivo obj, _) => obj.percentual,
+          labelAccessorFn: (Objetivo obj, _) =>
+              '${obj.nome} ${obj.percentual}%',
+          data: _objetivos,
+        ),
+      ),
+      acoes: <Widget>[
+        IconButton(
+          icon: Icon(Icons.help),
+          onPressed: () => {},
+        ),
+        IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ObjetivosForm(objetivos: _objetivos)),
+            ).then((value) => buscarDados())
+          },
+        ),
+      ],
     );
   }
 
