@@ -18,6 +18,10 @@ class Objetivo {
     this.ordem,
   });
 
+  double cumprido(double totalAtivos) {
+    return this.sumValores / (totalAtivos != 0.0 ? totalAtivos : 1);
+  }
+
   bool ehUmAtivo() {
     return [ATIVO_ACAO, ATIVO_FII, ATIVO_RF, ATIVO_STOCK, ATIVO_REIT]
         .contains(this.tipo);

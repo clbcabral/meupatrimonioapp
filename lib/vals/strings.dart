@@ -34,4 +34,7 @@ class Strings {
   static String cancelar = "Cancelar";
   static String confirmar = "Confirmar";
   static String atencao = "Atenção";
+  static String objetivos = "Objetivos";
+  static String sobre = "Sobre";
+  static String sair = "Sair";
 }

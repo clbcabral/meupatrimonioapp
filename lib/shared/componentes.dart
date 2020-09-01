@@ -46,10 +46,11 @@ class Alerta extends StatelessWidget {
 }
 
 class Graficos extends StatefulWidget {
+  final double totalAtivos;
   final charts.Series seriesA;
   final charts.Series seriesB;
 
-  Graficos({this.seriesA, this.seriesB});
+  Graficos({this.totalAtivos, this.seriesA, this.seriesB});
 
   @override
   GraficosState createState() => GraficosState();
@@ -83,7 +84,7 @@ class GraficosState extends State<Graficos> {
   }
 
   Widget corpoGraficos(context, String titulo, charts.Series series) {
-    if (series.data == null || series.data.isEmpty) {
+    if (series.data == null || series.data.isEmpty || widget.totalAtivos == 0) {
       return Center(
         child: Text('Ainda sem dados.'),
       );

@@ -19,6 +19,10 @@ class Ativo {
     this.tipo,
   });
 
+  double cumprido(double totalAtivos) {
+    return this.valor() / (totalAtivos != 0.0 ? totalAtivos : 1);
+  }
+
   double valor() {
     if (this.cotacao == null || this.quantidade == null) {
       return 0.0;

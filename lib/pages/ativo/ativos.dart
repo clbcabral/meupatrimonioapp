@@ -62,12 +62,13 @@ class AtivosState extends State<AtivosWidget> {
       titulo: widget.titulo,
       corpo: corpo(context, totalAtivos, totalPesos),
       graficos: Graficos(
+        totalAtivos: totalAtivos,
         seriesA: charts.Series<Ativo, String>(
           id: 'atual',
           domainFn: (Ativo obj, _) => obj.descricao(),
-          measureFn: (Ativo obj, _) => obj.valor() / totalAtivos,
+          measureFn: (Ativo obj, _) => obj.cumprido(totalAtivos),
           labelAccessorFn: (Ativo obj, _) =>
-              '${_fmtPct.format(obj.valor() / totalAtivos)}',
+              '${_fmtPct.format(obj.cumprido(totalAtivos))}',
           data: _ativos,
         ),
         seriesB: charts.Series<Ativo, String>(

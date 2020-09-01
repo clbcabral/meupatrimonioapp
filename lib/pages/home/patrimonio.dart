@@ -68,6 +68,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
 
   @override
   Widget build(BuildContext context) {
+    double totalAtivos = calcularSubTotal();
     return PaginaComTabsWidget(
       carregando: _carregando,
       exibeDrawer: true,
@@ -75,12 +76,13 @@ class PatrimonioState extends State<PatrimonioWidget> {
       corpo: corpoPatrimonio(),
       botaoAdicionar: null,
       graficos: Graficos(
+        totalAtivos: totalAtivos,
         seriesA: charts.Series<Objetivo, String>(
           id: 'atual',
           domainFn: (Objetivo obj, _) => obj.nome,
-          measureFn: (Objetivo obj, _) => obj.percentual,
+          measureFn: (Objetivo obj, _) => obj.cumprido(totalAtivos),
           labelAccessorFn: (Objetivo obj, _) =>
-              '${obj.nome} ${obj.percentual}%',
+              '${obj.nome} ${obj.cumprido(totalAtivos)}%',
           data: _objetivos,
         ),
         seriesB: charts.Series<Objetivo, String>(
