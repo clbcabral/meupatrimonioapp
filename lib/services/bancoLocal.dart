@@ -1,6 +1,5 @@
 import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
-import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
@@ -30,8 +29,6 @@ class ServicoBancoLocal {
     Batch batch = db.batch();
     batch.execute(
         'create table ativos (id TEXT PRIMARY KEY, nome TEXT, ticker TEXT, cotacao REAL, quantidade REAL, peso REAL, tipo TEXT)');
-    batch.execute(
-        'create table dividas (id TEXT PRIMARY KEY, nome TEXT, valor REAL)');
     batch.execute(
         'create table reservas (id TEXT PRIMARY KEY, nome TEXT, valor REAL, tipo TEXT)');
     batch.execute(
@@ -140,13 +137,6 @@ class ServicoBancoLocal {
           where: 'id = ?', whereArgs: [objetivo.id]);
     });
     await batch.commit();
-  }
-
-  Future<List<Divida>> listarDividas() async {
-    Database db = await this.db;
-    return db
-        .query('dividas')
-        .then((dividas) => dividas.map((map) => Divida.fromMap(map)).toList());
   }
 
   Future<List<Reserva>> listarReservas(String tipo) async {

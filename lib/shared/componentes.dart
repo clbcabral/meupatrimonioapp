@@ -1,6 +1,8 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
@@ -45,17 +47,17 @@ class Alerta extends StatelessWidget {
   }
 }
 
-class Graficos extends StatefulWidget {
+class GraficosWidget extends StatefulWidget {
   final charts.Series seriesAtual;
   final charts.Series seriesIdeal;
 
-  Graficos({this.seriesAtual, this.seriesIdeal});
+  GraficosWidget({this.seriesAtual, this.seriesIdeal});
 
   @override
-  GraficosState createState() => GraficosState();
+  GraficosWidgetState createState() => GraficosWidgetState();
 }
 
-class GraficosState extends State<Graficos> {
+class GraficosWidgetState extends State<GraficosWidget> {
   int _paginaAtual = 0;
 
   Widget build(BuildContext context) {
@@ -138,11 +140,67 @@ class GraficosState extends State<Graficos> {
   }
 }
 
+class OndeAportarWidget extends StatefulWidget {
+  final List<Percentual> dados;
+
+  OndeAportarWidget({this.dados});
+
+  OndeAportarState createState() => OndeAportarState();
+}
+
+class OndeAportarState extends State<OndeAportarWidget> {
+  final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Padding(
+        padding: EdgeInsets.all(15),
+        child: Text(
+          'Abaixo encontram-se os ativos ordenados por quanto falta percentualmente para alcançar seu objetivo.',
+          style: const TextStyle(fontSize: 14),
+        ),
+      ),
+      Expanded(
+          child: ListView.builder(
+        itemCount: widget.dados.length,
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsets.all(5.0),
+          child: Card(
+            margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(7),
+              leading: CircleAvatar(
+                radius: 25.0,
+                backgroundColor: Theme.of(context).buttonColor,
+                child: Text('${index + 1}'),
+              ),
+              dense: true,
+              title: Text(
+                widget.dados[index].descricao,
+                style: const TextStyle(),
+              ),
+              trailing: Text(
+                '${_fmtPct.format(widget.dados[index].falta)}',
+                style: TextStyle(
+                  color:
+                      widget.dados[index].falta > 0 ? Colors.green : Colors.red,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ))
+    ]);
+  }
+}
+
 class PaginaComTabsWidget extends StatefulWidget {
   final String titulo;
   final List<Widget> acoes;
   final Widget corpo;
-  final Graficos graficos;
+  final OndeAportarWidget ondeAportar;
+  final GraficosWidget graficos;
   final bool exibeDrawer;
   final bool carregando;
   final FloatingActionButton botaoAdicionar;
@@ -152,6 +210,7 @@ class PaginaComTabsWidget extends StatefulWidget {
       this.acoes,
       this.corpo,
       this.graficos,
+      this.ondeAportar,
       this.botaoAdicionar,
       this.exibeDrawer,
       this.carregando});
@@ -183,52 +242,45 @@ class PaginaComTabsState extends State<PaginaComTabsWidget>
 
   @override
   Widget build(BuildContext context) {
-    return (widget.carregando == true)
-        ? Container(
-            padding: EdgeInsets.all(25),
-            child: Center(
-              child: CircularProgressIndicator(),
+    return Scaffold(
+      drawer: widget.exibeDrawer ? MenuLateral() : null,
+      appBar: AppBar(
+        title: Text(
+          widget.titulo,
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: widget.acoes,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              text: Strings.consolidado,
             ),
-          )
-        : Scaffold(
-            drawer: widget.exibeDrawer ? MenuLateral() : null,
-            appBar: AppBar(
-              title: Text(
-                widget.titulo,
-                style: TextStyle(fontSize: 16),
-              ),
-              actions: widget.acoes,
-              bottom: TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(
-                    text: Strings.consolidado,
-                  ),
-                  Tab(
-                    text: Strings.graficos,
-                  ),
-                  Tab(
-                    text: Strings.ondeAportar,
-                  ),
-                ],
-              ),
+            Tab(
+              text: Strings.graficos,
             ),
-            floatingActionButton:
-                _tabController.index == 0 ? widget.botaoAdicionar : null,
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                Tab(
-                  child: widget.corpo,
-                ),
-                Tab(
-                  child: widget.graficos,
-                ),
-                Tab(
-                  icon: Icon(Icons.account_balance),
-                ),
-              ],
+            Tab(
+              text: Strings.ondeAportar,
             ),
-          );
+          ],
+        ),
+      ),
+      floatingActionButton:
+          _tabController.index == 0 ? widget.botaoAdicionar : null,
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Tab(
+            child: widget.corpo,
+          ),
+          Tab(
+            child: widget.graficos,
+          ),
+          Tab(
+            child: widget.ondeAportar,
+          ),
+        ],
+      ),
+    );
   }
 }

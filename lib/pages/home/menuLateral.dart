@@ -35,13 +35,6 @@ class MenuLateral extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.money_off),
-            title: Text(Strings.dividas),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.android),
             title: Text(Strings.sobre),
             onTap: () {

@@ -69,7 +69,7 @@ class AtivosState extends State<AtivosWidget> {
       exibeDrawer: false,
       titulo: widget.titulo,
       corpo: corpo(context, totalAtivos, totalPesos),
-      graficos: Graficos(
+      graficos: GraficosWidget(
         seriesAtual: charts.Series<Percentual, String>(
           id: 'atual',
           domainFn: (Percentual p, _) => p.descricao,
@@ -84,6 +84,9 @@ class AtivosState extends State<AtivosWidget> {
           labelAccessorFn: (Percentual p, _) => '${_fmtPct.format(p.ideal)}',
           data: _percentuais,
         ),
+      ),
+      ondeAportar: OndeAportarWidget(
+        dados: _percentuais,
       ),
       botaoAdicionar: FloatingActionButton(
         child: Icon(Icons.add),

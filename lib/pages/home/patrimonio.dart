@@ -1,7 +1,7 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
-import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
+import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/services/bancoLocal.dart';
@@ -19,7 +19,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
   bool _carregando = false;
   final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Objetivo> _objetivos;
-  List<Divida> _dividas;
   final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
 
   @override
@@ -34,46 +33,38 @@ class PatrimonioState extends State<PatrimonioWidget> {
     });
     List<Future> operacoes = [
       ServicoBancoLocal().listarObjetivos(),
-      ServicoBancoLocal().listarDividas(),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      print(data);
       _carregando = false;
       _objetivos = data[0];
-      _dividas = data[1];
     });
   }
 
-  double calcularDividas() {
-    if (_dividas == null) {
-      return 0.0;
-    }
-    return _dividas.fold(0.0, (val, divida) => val + divida.valor);
-  }
-
-  double calcularSubTotal() {
+  double calcularTotal() {
     if (_objetivos == null) {
       return 0.0;
     }
     return _objetivos.fold(0.0, (val, objetivo) => val + (objetivo.valor));
   }
 
-  double calcularTotal() {
-    double dividas = calcularDividas();
-    double subtotal = calcularSubTotal();
-    return (subtotal - dividas).abs();
-  }
-
   @override
   Widget build(BuildContext context) {
+    List<Percentual> ondeAportar = _objetivos != null
+        ? List.generate(
+            _objetivos.length,
+            (index) => Percentual(
+                descricao: _objetivos[index].nome,
+                falta: _objetivos[index].falta))
+        : [];
+    ondeAportar.sort((a, b) => b.falta.compareTo(a.falta));
     return PaginaComTabsWidget(
       carregando: _carregando,
       exibeDrawer: true,
       titulo: Strings.meuPatrimonio,
       corpo: corpoPatrimonio(),
       botaoAdicionar: null,
-      graficos: Graficos(
+      graficos: GraficosWidget(
         seriesAtual: charts.Series<Objetivo, String>(
           id: 'atual',
           domainFn: (Objetivo obj, _) => obj.nome,
@@ -90,6 +81,9 @@ class PatrimonioState extends State<PatrimonioWidget> {
               '${obj.nome} ${_fmtPct.format(obj.ideal)}%',
           data: _objetivos,
         ),
+      ),
+      ondeAportar: OndeAportarWidget(
+        dados: ondeAportar,
       ),
       acoes: <Widget>[
         IconButton(
@@ -142,39 +136,13 @@ class PatrimonioState extends State<PatrimonioWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                Strings.dividas,
-                style: TextStyle(
-                  color: Colors.white38,
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                _formatador.format(calcularDividas()),
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
+          Text(
+            Strings.total,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                Strings.subtotal,
-                style: const TextStyle(
-                  color: Colors.white38,
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                _formatador.format(calcularSubTotal()),
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
+          Text(
+            _formatador.format(calcularTotal()),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
       ),

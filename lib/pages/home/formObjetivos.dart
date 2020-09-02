@@ -22,7 +22,8 @@ class ObjetivosFormState extends State<ObjetivosForm> {
     if (widget.objetivos == null) {
       return 0.0;
     }
-    return widget.objetivos.fold(0.0, (val, objetivo) => val + objetivo.ideal);
+    return widget.objetivos.fold(0.0, (val, objetivo) => val + objetivo.ideal) *
+        100;
   }
 
   @override
@@ -37,7 +38,7 @@ class ObjetivosFormState extends State<ObjetivosForm> {
         IconButton(
           icon: Icon(Icons.save),
           onPressed: () async {
-            if (calcularTotal().round() != 100.0) {
+            if (calcularTotal() != 100.0) {
               var snak = SnackBar(
                 content: Text('A soma dos objetivos deve ser igual a 100%.'),
               );
@@ -64,7 +65,7 @@ class ObjetivosFormState extends State<ObjetivosForm> {
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
-                  '${calcularTotal().round()}%',
+                  '${calcularTotal().roundToDouble()}%',
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
@@ -92,17 +93,18 @@ class ObjetivosFormState extends State<ObjetivosForm> {
                       style: const TextStyle(),
                     ),
                     subtitle: Slider(
-                      value: widget.objetivos[index].ideal,
+                      value: widget.objetivos[index].ideal * 100,
                       min: 0,
-                      max: 1,
+                      max: 100,
                       onChanged: (double value) {
                         setState(() {
-                          widget.objetivos[index].ideal = value.roundToDouble();
+                          widget.objetivos[index].ideal =
+                              value.roundToDouble() / 100;
                         });
                       },
                     ),
                     trailing: Text(
-                      '${widget.objetivos[index].ideal.round()}%',
+                      '${(widget.objetivos[index].ideal * 100).round()}%',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,

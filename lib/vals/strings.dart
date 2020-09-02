@@ -13,7 +13,6 @@ class Strings {
   static String reservaValor = "Reserva de Valor";
   static String revervaOportunidade = "Reserva de Oportunidade";
   static String reservaEmergencia = "Reserva de Emergência";
-  static String dividas = "Dívidas";
   static String total = "Total";
   static String subtotal = "Total - Dívidas";
   static String dicaAdicionar = "Toque no '+' para adicionar um item.";
