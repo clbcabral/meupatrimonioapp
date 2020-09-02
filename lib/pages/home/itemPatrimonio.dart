@@ -6,21 +6,15 @@ import 'package:meupatrimonio/pages/reserva/reservas.dart';
 
 class ItemPatrimonio extends StatelessWidget {
   final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
-  final double subtotal;
   final Objetivo objetivo;
   final Function callback;
   ItemPatrimonio({
-    this.subtotal,
     this.objetivo,
     this.callback,
   });
 
   @override
   Widget build(BuildContext context) {
-    NumberFormat formatador = NumberFormat.percentPattern();
-    double atual =
-        this.objetivo.sumValores / (this.subtotal > 0 ? this.subtotal : 1);
-    double ideal = this.objetivo.percentual;
     return Padding(
       padding: EdgeInsets.only(top: 5.0),
       child: Card(
@@ -58,10 +52,9 @@ class ItemPatrimonio extends StatelessWidget {
           ),
           dense: true,
           trailing: Text(
-            _formatador.format(this.objetivo.sumValores ?? 0),
+            _formatador.format(this.objetivo.valor),
             style: TextStyle(
-              color:
-                  this.objetivo.sumValores > 0.0 ? Colors.green : Colors.black,
+              color: this.objetivo.valor > 0.0 ? Colors.green : Colors.black,
               fontSize: 14,
             ),
           ),

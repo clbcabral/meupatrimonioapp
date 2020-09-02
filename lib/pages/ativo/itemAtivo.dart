@@ -9,14 +9,11 @@ class ItemAtivo extends StatelessWidget {
   final double totalAtivos;
   final double totalPesos;
   final NumberFormat _fmtValor = NumberFormat.simpleCurrency(locale: 'pt_br');
-  final NumberFormat _fmtPct = NumberFormat.percentPattern();
 
   ItemAtivo({this.ativo, this.totalAtivos, this.totalPesos, this.callback});
 
   @override
   Widget build(BuildContext context) {
-    double ideal = this.ativo.peso / this.totalPesos;
-    double atual = this.ativo.valor() / this.totalAtivos;
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: Card(

@@ -17,6 +17,7 @@ class PatrimonioWidget extends StatefulWidget {
 
 class PatrimonioState extends State<PatrimonioWidget> {
   bool _carregando = false;
+  final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Objetivo> _objetivos;
   List<Divida> _dividas;
   final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
@@ -34,7 +35,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
     List<Future> operacoes = [
       ServicoBancoLocal().listarObjetivos(),
       ServicoBancoLocal().listarDividas(),
-      // new Future.delayed(const Duration(seconds: 3), () => "1"),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
@@ -56,8 +56,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
     if (_objetivos == null) {
       return 0.0;
     }
-    return _objetivos.fold(
-        0.0, (val, objetivo) => val + (objetivo.sumValores ?? 0));
+    return _objetivos.fold(0.0, (val, objetivo) => val + (objetivo.valor));
   }
 
   double calcularTotal() {
@@ -68,7 +67,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
 
   @override
   Widget build(BuildContext context) {
-    double totalAtivos = calcularSubTotal();
     return PaginaComTabsWidget(
       carregando: _carregando,
       exibeDrawer: true,
@@ -76,21 +74,20 @@ class PatrimonioState extends State<PatrimonioWidget> {
       corpo: corpoPatrimonio(),
       botaoAdicionar: null,
       graficos: Graficos(
-        totalAtivos: totalAtivos,
-        seriesA: charts.Series<Objetivo, String>(
+        seriesAtual: charts.Series<Objetivo, String>(
           id: 'atual',
           domainFn: (Objetivo obj, _) => obj.nome,
-          measureFn: (Objetivo obj, _) => obj.cumprido(totalAtivos),
+          measureFn: (Objetivo obj, _) => obj.atual,
           labelAccessorFn: (Objetivo obj, _) =>
-              '${obj.nome} ${obj.cumprido(totalAtivos)}%',
+              '${obj.nome} ${_fmtPct.format(obj.atual)}%',
           data: _objetivos,
         ),
-        seriesB: charts.Series<Objetivo, String>(
+        seriesIdeal: charts.Series<Objetivo, String>(
           id: 'ideal',
           domainFn: (Objetivo obj, _) => obj.nome,
-          measureFn: (Objetivo obj, _) => obj.percentual,
+          measureFn: (Objetivo obj, _) => obj.ideal,
           labelAccessorFn: (Objetivo obj, _) =>
-              '${obj.nome} ${obj.percentual}%',
+              '${obj.nome} ${_fmtPct.format(obj.ideal)}%',
           data: _objetivos,
         ),
       ),
@@ -117,7 +114,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
     if (_objetivos == null) {
       return Container();
     }
-    double subtotal = calcularSubTotal();
     return Column(children: <Widget>[
       cabecalhoResumoPatrimonio(),
       Expanded(
@@ -129,7 +125,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
                 itemCount: _objetivos.length,
                 itemBuilder: (context, index) {
                   return ItemPatrimonio(
-                    subtotal: subtotal,
                     objetivo: _objetivos[index],
                     callback: buscarDados,
                   );

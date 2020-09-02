@@ -1,3 +1,4 @@
+import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/divida.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
@@ -26,74 +27,30 @@ class ServicoBancoLocal {
   }
 
   void _criarBanco(Database db, int version) async {
-    Map<String, dynamic> tabelas = {
-      'ativos': {
-        'model': Ativo.exemplo(),
-        'primaryKey': 'id',
-      },
-      'dividas': {
-        'model': Divida.exemplo(),
-        'primaryKey': 'id',
-      },
-      'reservas': {
-        'model': Reserva.exemplo(),
-        'primaryKey': 'id',
-      },
-      'objetivos': {
-        'model': Objetivo.exemplo(),
-        'primaryKey': 'id',
-      },
-    };
-
     Batch batch = db.batch();
-
-    tabelas.forEach((nomeTabela, dados) async {
-      String query = '';
-      for (MapEntry<String, dynamic> coluna in dados['model'].toMap().entries) {
-        if (coluna.key.startsWith('sum')) {
-          continue;
-        }
-        query += '${coluna.key} ${getTipoNaDB(coluna.value)}';
-        if (coluna.key == dados['primaryKey']) {
-          query += ' PRIMARY KEY';
-        }
-        query += ', ';
-      }
-      query = query.substring(0, query.length - 2);
-      batch.execute('CREATE TABLE $nomeTabela($query)');
-    });
-
     batch.execute(
-        'INSERT INTO objetivos (ID, NOME, TIPO, PERCENTUAL, VALOR, ORDEM) VALUES ' +
-            '(1, "Reserva de Emergência", "EMERGENCIA", 5.0, 0.0, 1),' +
-            '(2, "Ações", "ACAO", 15.0, 0.0, 2),' +
-            '(3, "FIIs", "FII", 15.0, 0.0, 3),' +
-            '(4, "Renda Fixa", "RF", 30.0, 0.0, 4),' +
-            '(5, "Stocks", "STOCK", 15.0, 0.0, 5),' +
-            '(6, "REITs", "REIT", 15.0, 0.0, 6),' +
-            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 2.5, 0.0, 7),' +
-            '(8, "Reserva de Valor", "VALOR", 2.5, 0.0, 8)');
+        'create table ativos (id TEXT PRIMARY KEY, nome TEXT, ticker TEXT, cotacao REAL, quantidade REAL, peso REAL, tipo TEXT)');
+    batch.execute(
+        'create table dividas (id TEXT PRIMARY KEY, nome TEXT, valor REAL)');
+    batch.execute(
+        'create table reservas (id TEXT PRIMARY KEY, nome TEXT, valor REAL, tipo TEXT)');
+    batch.execute(
+        'create table objetivos (id TEXT PRIMARY KEY, nome TEXT, tipo TEXT, ideal REAL, ordem INTEGER)');
+    batch.execute(
+        'INSERT INTO objetivos (ID, NOME, TIPO, IDEAL, ORDEM) VALUES ' +
+            '(1, "Reserva de Emergência", "EMERGENCIA", 0.05, 1),' +
+            '(2, "Ações", "ACAO", 0.15, 2),' +
+            '(3, "FIIs", "FII", 0.15, 3),' +
+            '(4, "Renda Fixa", "RF", 0.30, 4),' +
+            '(5, "Stocks", "STOCK", 0.15, 5),' +
+            '(6, "REITs", "REIT", 0.15, 6),' +
+            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 0.025, 7),' +
+            '(8, "Reserva de Valor", "VALOR", 0.025, 8)');
 
     await batch.commit();
   }
 
   void _atualizarBanco(Database db, int oldVersion, int newVersion) {}
-
-  String getTipoNaDB(dynamic column) {
-    if (column is String) {
-      return 'TEXT';
-    } else if (column is int) {
-      return 'INTEGER';
-    } else if (column is bool) {
-      return 'INTEGER'; // 1 - true, 0 - false
-    } else if (column is DateTime) {
-      return 'TEXT';
-    } else if (column is double) {
-      return 'REAL';
-    } else {
-      return 'TEXT';
-    }
-  }
 
   // Operacoes dos modelos
 
@@ -125,20 +82,61 @@ class ServicoBancoLocal {
   Future<List<Objetivo>> listarObjetivos() async {
     Database db = await this.db;
     return db
-        .rawQuery('SELECT o.*, ' +
-            'IFNULL(IFNULL((select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o.tipo), ' +
-            '      (select sum(r.valor) from reservas r where r.tipo = o.tipo)), 0.0) as sumValores ' +
-            'FROM objetivos o ' +
-            'ORDER BY o.ordem ASC')
+        .rawQuery('SELECT ' +
+            '  o.id, ' +
+            '  o.nome, ' +
+            '  o.tipo, ' +
+            '  o.valor, ' +
+            '  o.ideal, ' +
+            '  IFNULL((o.valor / o.tudo), 0.0) as atual, ' +
+            '  IFNULL((o.ideal - o.valor / o.tudo), 0.0) as falta, ' +
+            '  o.ordem ' +
+            'FROM ( ' +
+            '  SELECT  ' +
+            '    o1.*,  ' +
+            '    IFNULL( ' +
+            '      IFNULL( ' +
+            '        (select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o1.tipo),  ' +
+            '      (select sum(r.valor) from reservas r where r.tipo = o1.tipo) ' +
+            '      ),  ' +
+            '    0.0) as valor, ' +
+            '    (IFNULL((select sum(a.cotacao * a.quantidade) from ativos a), 0.0) + ' +
+            '    IFNULL((select sum(r.valor) from reservas r), 0.0)) as tudo ' +
+            '  FROM objetivos o1  ' +
+            ') AS o ' +
+            'ORDER BY o.ordem ASC ')
         .then((objetivos) =>
             objetivos.map((map) => Objetivo.fromMap(map)).toList());
+  }
+
+  Future<List<Percentual>> listarPercentuais(String tipoAtivo) async {
+    Database db = await this.db;
+    return db.rawQuery(
+        'SELECT ' +
+            '	CASE WHEN A.TIPO == "RF" THEN A.NOME ELSE A.TICKER END AS descricao, ' +
+            '    (A.VALOR / A.TOTAL_ATIVOS) atual, ' +
+            '    (A.PESO / A.TOTAL_PESOS) ideal, ' +
+            '    (A.PESO / A.TOTAL_PESOS - A.VALOR / A.TOTAL_ATIVOS) falta ' +
+            'FROM ( ' +
+            '  SELECT *, ' +
+            '  (A1.cotacao * A1.quantidade) AS VALOR, ' +
+            '  (SELECT SUM(A2.cotacao * A2.quantidade) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO) AS TOTAL_ATIVOS, ' +
+            '  (SELECT SUM(A2.PESO) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO) AS TOTAL_PESOS ' +
+            '  FROM ATIVOS A1 ' +
+            '  WHERE A1.TIPO = ? ' +
+            ') AS A ' +
+            'ORDER BY FALTA DESC',
+        [
+          tipoAtivo
+        ]).then(
+        (aportes) => aportes.map((map) => Percentual.fromMap(map)).toList());
   }
 
   Future atualizarObjetivos(List<Objetivo> objetivos) async {
     Database db = await this.db;
     Batch batch = db.batch();
     objetivos.forEach((objetivo) {
-      batch.update('objetivos', {'percentual': objetivo.percentual},
+      batch.update('objetivos', {'ideal': objetivo.ideal},
           where: 'id = ?', whereArgs: [objetivo.id]);
     });
     await batch.commit();

@@ -46,11 +46,10 @@ class Alerta extends StatelessWidget {
 }
 
 class Graficos extends StatefulWidget {
-  final double totalAtivos;
-  final charts.Series seriesA;
-  final charts.Series seriesB;
+  final charts.Series seriesAtual;
+  final charts.Series seriesIdeal;
 
-  Graficos({this.totalAtivos, this.seriesA, this.seriesB});
+  Graficos({this.seriesAtual, this.seriesIdeal});
 
   @override
   GraficosState createState() => GraficosState();
@@ -70,8 +69,8 @@ class GraficosState extends State<Graficos> {
               });
             },
             children: [
-              corpoGraficos(context, 'Posição atual', widget.seriesA),
-              corpoGraficos(context, 'Posição ideal', widget.seriesB),
+              corpoGraficos(context, 'Posição atual', widget.seriesAtual),
+              corpoGraficos(context, 'Posição ideal', widget.seriesIdeal),
             ],
           ),
         ),
@@ -84,7 +83,13 @@ class GraficosState extends State<Graficos> {
   }
 
   Widget corpoGraficos(context, String titulo, charts.Series series) {
-    if (series.data == null || series.data.isEmpty || widget.totalAtivos == 0) {
+    bool possuiValor = false;
+    series.data.asMap().forEach((key, value) {
+      if (series.measureFn.call(key) > 0) {
+        possuiValor = true;
+      }
+    });
+    if (!possuiValor) {
       return Center(
         child: Text('Ainda sem dados.'),
       );

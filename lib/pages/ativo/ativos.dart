@@ -1,6 +1,7 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
@@ -22,8 +23,9 @@ class AtivosWidget extends StatefulWidget {
 class AtivosState extends State<AtivosWidget> {
   bool _carregando = false;
   final _fmtValor = NumberFormat.simpleCurrency(locale: 'pt_br');
-  final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 2);
+  final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Ativo> _ativos = [];
+  List<Percentual> _percentuais = [];
 
   @override
   void initState() {
@@ -32,9 +34,15 @@ class AtivosState extends State<AtivosWidget> {
   }
 
   void buscarDados() async {
-    List<Ativo> ativos = await ServicoBancoLocal().listarAtivos(widget.tipo);
+    List<Future> operacoes = [
+      ServicoBancoLocal().listarAtivos(widget.tipo),
+      ServicoBancoLocal().listarPercentuais(widget.tipo),
+    ];
+    List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      _ativos = ativos;
+      print(data);
+      _ativos = data[0];
+      _percentuais = data[1];
     });
   }
 
@@ -62,22 +70,19 @@ class AtivosState extends State<AtivosWidget> {
       titulo: widget.titulo,
       corpo: corpo(context, totalAtivos, totalPesos),
       graficos: Graficos(
-        totalAtivos: totalAtivos,
-        seriesA: charts.Series<Ativo, String>(
+        seriesAtual: charts.Series<Percentual, String>(
           id: 'atual',
-          domainFn: (Ativo obj, _) => obj.descricao(),
-          measureFn: (Ativo obj, _) => obj.cumprido(totalAtivos),
-          labelAccessorFn: (Ativo obj, _) =>
-              '${_fmtPct.format(obj.cumprido(totalAtivos))}',
-          data: _ativos,
+          domainFn: (Percentual p, _) => p.descricao,
+          measureFn: (Percentual p, _) => p.atual,
+          labelAccessorFn: (Percentual p, _) => '${_fmtPct.format(p.atual)}',
+          data: _percentuais,
         ),
-        seriesB: charts.Series<Ativo, String>(
+        seriesIdeal: charts.Series<Percentual, String>(
           id: 'ideal',
-          domainFn: (Ativo obj, _) => obj.descricao(),
-          measureFn: (Ativo obj, _) => obj.peso / totalPesos,
-          labelAccessorFn: (Ativo obj, _) =>
-              '${_fmtPct.format(obj.peso / totalPesos)}',
-          data: _ativos,
+          domainFn: (Percentual p, _) => p.descricao,
+          measureFn: (Percentual p, _) => p.ideal,
+          labelAccessorFn: (Percentual p, _) => '${_fmtPct.format(p.ideal)}',
+          data: _percentuais,
         ),
       ),
       botaoAdicionar: FloatingActionButton(

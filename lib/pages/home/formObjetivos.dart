@@ -22,8 +22,7 @@ class ObjetivosFormState extends State<ObjetivosForm> {
     if (widget.objetivos == null) {
       return 0.0;
     }
-    return widget.objetivos
-        .fold(0.0, (val, objetivo) => val + objetivo.percentual);
+    return widget.objetivos.fold(0.0, (val, objetivo) => val + objetivo.ideal);
   }
 
   @override
@@ -93,18 +92,17 @@ class ObjetivosFormState extends State<ObjetivosForm> {
                       style: const TextStyle(),
                     ),
                     subtitle: Slider(
-                      value: widget.objetivos[index].percentual,
+                      value: widget.objetivos[index].ideal,
                       min: 0,
-                      max: 100,
+                      max: 1,
                       onChanged: (double value) {
                         setState(() {
-                          widget.objetivos[index].percentual =
-                              value.roundToDouble();
+                          widget.objetivos[index].ideal = value.roundToDouble();
                         });
                       },
                     ),
                     trailing: Text(
-                      '${widget.objetivos[index].percentual.round()}%',
+                      '${widget.objetivos[index].ideal.round()}%',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
