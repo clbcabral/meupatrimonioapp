@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "946564404479",
+    "firebase_url": "https://meupatrimonio-78ce5.firebaseio.com",
+    "project_id": "meupatrimonio-78ce5",
+    "storage_bucket": "meupatrimonio-78ce5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946564404479:android:04b7bbb01226e9201f68ca",
+        "android_client_info": {
+          "package_name": "com.github.clbcabral.meupatrimonio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946564404479-0v31uafbef3hj00qe9okgjghg017nhsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrS9zQd7Ohy4nUQ3pT4oBN3llf7OpJlpw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946564404479-0v31uafbef3hj00qe9okgjghg017nhsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
