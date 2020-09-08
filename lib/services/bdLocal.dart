@@ -2,6 +2,7 @@ import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/reserva.dart';
+import 'package:meupatrimonio/models/usuario.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -28,22 +29,13 @@ class ServicoBancoLocal {
   void _criarBanco(Database db, int version) async {
     Batch batch = db.batch();
     batch.execute(
-        'create table ativos (id TEXT PRIMARY KEY, nome TEXT, ticker TEXT, cotacao REAL, quantidade REAL, peso REAL, tipo TEXT)');
+        'create table usuarios (id TEXT PRIMARY KEY, email TEXT, nome TEXT)');
     batch.execute(
-        'create table reservas (id TEXT PRIMARY KEY, nome TEXT, valor REAL, tipo TEXT)');
+        'create table ativos (id TEXT PRIMARY KEY, nome TEXT, ticker TEXT, cotacao REAL, quantidade REAL, peso REAL, tipo TEXT, uid TEXT)');
     batch.execute(
-        'create table objetivos (id TEXT PRIMARY KEY, nome TEXT, tipo TEXT, ideal REAL, ordem INTEGER)');
+        'create table reservas (id TEXT PRIMARY KEY, nome TEXT, valor REAL, tipo TEXT, uid TEXT)');
     batch.execute(
-        'INSERT INTO objetivos (ID, NOME, TIPO, IDEAL, ORDEM) VALUES ' +
-            '(1, "Reserva de Emergência", "EMERGENCIA", 0.05, 1),' +
-            '(2, "Ações", "ACAO", 0.15, 2),' +
-            '(3, "FIIs", "FII", 0.15, 3),' +
-            '(4, "Renda Fixa", "RF", 0.30, 4),' +
-            '(5, "Stocks", "STOCK", 0.15, 5),' +
-            '(6, "REITs", "REIT", 0.15, 6),' +
-            '(7, "Reserva de Oportunidade", "OPORTUNIDADE", 0.025, 7),' +
-            '(8, "Reserva de Valor", "VALOR", 0.025, 8)');
-
+        'create table objetivos (id TEXT PRIMARY KEY, nome TEXT, tipo TEXT, ideal REAL, ordem INTEGER, uid TEXT)');
     await batch.commit();
   }
 
@@ -51,12 +43,69 @@ class ServicoBancoLocal {
 
   // Operacoes dos modelos
 
-  Future<List<Ativo>> listarAtivos(String tipo) async {
+  Future adicionarUsuario(Usuario usuario) async {
+    Database db = await this.db;
+    await db.insert('usuarios', usuario.toMap());
+  }
+
+  Future<Usuario> obterUsuario(String uid) async {
+    Database db = await this.db;
+    return db.query(
+      'usuarios',
+      where: 'id = ?',
+      whereArgs: [uid],
+    ).then((map) => map.length == 1 ? Usuario.fromMap(map[0]) : null);
+  }
+
+  Future adicionarObjetivos(List<Objetivo> objetivos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    objetivos.forEach((objetivo) {
+      batch.insert('objetivos', {
+        'id': objetivo.id,
+        'nome': objetivo.nome,
+        'tipo': objetivo.tipo,
+        'ideal': objetivo.ideal,
+        'ordem': objetivo.ordem,
+        'uid': objetivo.uid,
+      });
+    });
+    await batch.commit();
+  }
+
+  Future adicionarAtivos(List<Ativo> ativos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    ativos.forEach((ativo) {
+      batch.insert('ativos', ativo.toMap());
+    });
+    await batch.commit();
+  }
+
+  Future adicionarReservas(List<Reserva> reservas) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    reservas.forEach((reserva) {
+      batch.insert('reservas', reserva.toMap());
+    });
+    await batch.commit();
+  }
+
+  Future<List<Ativo>> listarAtivos(String uid, String tipo) async {
     Database db = await this.db;
     return db.query(
       'ativos',
-      where: 'tipo = ?',
-      whereArgs: [tipo],
+      where: 'tipo = ? AND uid = ?',
+      whereArgs: [tipo, uid],
+    ).then((ativos) => ativos.map((map) => Ativo.fromMap(map)).toList());
+  }
+
+  Future<List<Ativo>> listarTodosAtivos(String uid) async {
+    Database db = await this.db;
+    return db.query(
+      'ativos',
+      where: 'uid = ?',
+      whereArgs: [uid],
     ).then((ativos) => ativos.map((map) => Ativo.fromMap(map)).toList());
   }
 
@@ -76,37 +125,42 @@ class ServicoBancoLocal {
     await db.delete('ativos', where: 'id = ?', whereArgs: [ativo.id]);
   }
 
-  Future<List<Objetivo>> listarObjetivos() async {
+  Future<List<Objetivo>> listarObjetivos(String uid) async {
     Database db = await this.db;
-    return db
-        .rawQuery('SELECT ' +
+    return db.rawQuery(
+        'SELECT ' +
             '  o.id, ' +
             '  o.nome, ' +
             '  o.tipo, ' +
             '  o.valor, ' +
             '  o.ideal, ' +
             '  IFNULL((o.valor / o.tudo), 0.0) as atual, ' +
-            '  IFNULL((o.ideal - o.valor / o.tudo), 0.0) as falta, ' +
-            '  o.ordem ' +
+            '  IFNULL((o.ideal - o.valor / o.tudo), o.ideal) as falta, ' +
+            '  o.ordem, ' +
+            '  o.uid ' +
             'FROM ( ' +
             '  SELECT  ' +
             '    o1.*,  ' +
             '    IFNULL( ' +
             '      IFNULL( ' +
-            '        (select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o1.tipo),  ' +
-            '      (select sum(r.valor) from reservas r where r.tipo = o1.tipo) ' +
+            '        (select sum(a.cotacao * a.quantidade) from ativos a where a.tipo = o1.tipo and a.uid = o1.uid),  ' +
+            '      (select sum(r.valor) from reservas r where r.tipo = o1.tipo and r.uid = o1.uid) ' +
             '      ),  ' +
             '    0.0) as valor, ' +
-            '    (IFNULL((select sum(a.cotacao * a.quantidade) from ativos a), 0.0) + ' +
-            '    IFNULL((select sum(r.valor) from reservas r), 0.0)) as tudo ' +
+            '    (IFNULL((select sum(a.cotacao * a.quantidade) from ativos a where a.uid = o1.uid), 0.0) + ' +
+            '    IFNULL((select sum(r.valor) from reservas r where r.uid = o1.uid), 0.0)) as tudo ' +
             '  FROM objetivos o1  ' +
+            '  WHERE o1.uid = ?  ' +
             ') AS o ' +
-            'ORDER BY o.ordem ASC ')
-        .then((objetivos) =>
-            objetivos.map((map) => Objetivo.fromMap(map)).toList());
+            'ORDER BY o.ordem ASC ',
+        [
+          uid
+        ]).then(
+        (objetivos) => objetivos.map((map) => Objetivo.fromMap(map)).toList());
   }
 
-  Future<List<Percentual>> listarPercentuais(String tipoAtivo) async {
+  Future<List<Percentual>> listarPercentuais(
+      String uid, String tipoAtivo) async {
     Database db = await this.db;
     return db.rawQuery(
         'SELECT ' +
@@ -117,14 +171,15 @@ class ServicoBancoLocal {
             'FROM ( ' +
             '  SELECT *, ' +
             '  (A1.cotacao * A1.quantidade) AS VALOR, ' +
-            '  (SELECT SUM(A2.cotacao * A2.quantidade) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO) AS TOTAL_ATIVOS, ' +
-            '  (SELECT SUM(A2.PESO) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO) AS TOTAL_PESOS ' +
+            '  (SELECT SUM(A2.cotacao * A2.quantidade) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO AND A1.UID = A2.UID) AS TOTAL_ATIVOS, ' +
+            '  (SELECT SUM(A2.PESO) FROM ATIVOS A2 WHERE A2.TIPO = A1.TIPO AND A1.UID = A2.UID) AS TOTAL_PESOS ' +
             '  FROM ATIVOS A1 ' +
-            '  WHERE A1.TIPO = ? ' +
+            '  WHERE A1.TIPO = ? AND A1.UID = ?' +
             ') AS A ' +
             'ORDER BY FALTA DESC',
         [
-          tipoAtivo
+          tipoAtivo,
+          uid
         ]).then(
         (aportes) => aportes.map((map) => Percentual.fromMap(map)).toList());
   }
@@ -139,12 +194,21 @@ class ServicoBancoLocal {
     await batch.commit();
   }
 
-  Future<List<Reserva>> listarReservas(String tipo) async {
+  Future<List<Reserva>> listarReservas(String uid, String tipo) async {
     Database db = await this.db;
     return db.query(
       'reservas',
-      where: 'tipo = ?',
-      whereArgs: [tipo],
+      where: 'tipo = ? AND uid = ?',
+      whereArgs: [tipo, uid],
+    ).then((reservas) => reservas.map((map) => Reserva.fromMap(map)).toList());
+  }
+
+  Future<List<Reserva>> listarTodasReservas(String uid) async {
+    Database db = await this.db;
+    return db.query(
+      'reservas',
+      where: 'uid = ?',
+      whereArgs: [uid],
     ).then((reservas) => reservas.map((map) => Reserva.fromMap(map)).toList());
   }
 

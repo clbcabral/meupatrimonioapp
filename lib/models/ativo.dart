@@ -8,6 +8,7 @@ class Ativo {
   double quantidade;
   double peso;
   String tipo;
+  String uid;
 
   Ativo({
     this.id,
@@ -17,6 +18,7 @@ class Ativo {
     this.quantidade,
     this.peso,
     this.tipo,
+    this.uid,
   });
 
   double valor() {
@@ -42,6 +44,7 @@ class Ativo {
     quantidade = 0.0;
     peso = 0;
     tipo = '';
+    uid = '';
   }
 
   Ativo.fromMap(Map<String, dynamic> map) {
@@ -52,6 +55,7 @@ class Ativo {
     this.quantidade = map['quantidade'];
     this.peso = map['peso'];
     this.tipo = map['tipo'];
+    this.uid = map['uid'];
   }
 
   Map<String, dynamic> toMap() {
@@ -63,6 +67,7 @@ class Ativo {
       'quantidade': quantidade,
       'peso': peso,
       'tipo': tipo,
+      'uid': uid,
     };
   }
 
@@ -73,7 +78,8 @@ class Ativo {
         this.cotacao == ativo.cotacao &&
         this.quantidade == ativo.quantidade &&
         this.peso == ativo.peso &&
-        this.tipo == ativo.tipo;
+        this.tipo == ativo.tipo &&
+        this.uid == ativo.uid;
   }
 
   Ativo clone() {
@@ -85,6 +91,7 @@ class Ativo {
       quantidade: this.quantidade,
       peso: this.peso,
       tipo: this.tipo,
+      uid: this.uid,
     );
   }
 
@@ -98,6 +105,7 @@ class Ativo {
       'quantidade': quantidade,
       'peso': peso,
       'tipo': tipo,
+      'uid': uid,
     }.toString();
   }
 }

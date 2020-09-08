@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meupatrimonio/models/ativo.dart';
-import 'package:meupatrimonio/models/reserva.dart';
-import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/sicronizador.dart';
 import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
@@ -46,6 +46,12 @@ class AtivoFormState extends State<AtivoForm> {
     _nomeController.text = widget.ativo.nome;
     _valorController.text = widget.ativo.valor().toString();
     _quantidadeController.text = widget.ativo.quantidade.toString();
+  }
+
+  @override
+  void dispose() {
+    ServicoSincronizador(widget.ativo.uid).sincronizarAtivos();
+    super.dispose();
   }
 
   @override
@@ -315,6 +321,7 @@ class AtivoFormState extends State<AtivoForm> {
           quantidade: double.parse(_quantidade),
           ticker: _ticker,
           peso: _peso,
+          uid: widget.ativo.uid,
           tipo: _tipo);
       ehEdicao
           ? await ServicoBancoLocal().atualizarAtivo(ativo)
@@ -341,10 +348,12 @@ class AtivoFormState extends State<AtivoForm> {
         quantidade: double.parse(_quantidade),
         ticker: null,
         peso: _peso,
+        uid: widget.ativo.uid,
         tipo: _tipo);
     ehEdicao
         ? await ServicoBancoLocal().atualizarAtivo(ativo)
         : await ServicoBancoLocal().adicionarAtivo(ativo);
+    ServicoSincronizador(widget.ativo.uid).sincronizarAtivos();
     Navigator.pop(context);
     widget.callback();
     setState(() {

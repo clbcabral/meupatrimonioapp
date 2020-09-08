@@ -1,16 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/pages/reserva/formReserva.dart';
 import 'package:meupatrimonio/pages/reserva/itemReserva.dart';
-import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/sicronizador.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:sticky_headers/sticky_headers/widget.dart';
 
 class ReservasWidget extends StatefulWidget {
   final String titulo;
   final String tipo;
-  ReservasWidget({Key key, this.titulo, this.tipo}) : super(key: key);
+  final FirebaseUser usuario;
+  ReservasWidget({Key key, this.titulo, this.tipo, this.usuario})
+      : super(key: key);
   @override
   ReservasState createState() => ReservasState();
 }
@@ -25,9 +28,15 @@ class ReservasState extends State<ReservasWidget> {
     buscarDados();
   }
 
+  @override
+  void dispose() {
+    ServicoSincronizador(widget.usuario.uid).sincronizarReservas();
+    super.dispose();
+  }
+
   void buscarDados() async {
-    List<Reserva> reservas =
-        await ServicoBancoLocal().listarReservas(widget.tipo);
+    List<Reserva> reservas = await ServicoBancoLocal()
+        .listarReservas(widget.usuario.uid, widget.tipo);
     setState(() {
       _reservas = reservas;
     });
@@ -64,6 +73,7 @@ class ReservasState extends State<ReservasWidget> {
                 builder: (context) {
                   Reserva reserva = Reserva.exemplo();
                   reserva.tipo = widget.tipo;
+                  reserva.uid = widget.usuario.uid;
                   return ReservaForm(
                     reserva: reserva,
                     callback: buscarDados,

@@ -1,30 +1,50 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meupatrimonio/models/usuario.dart';
+import 'package:meupatrimonio/services/autenticacao.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/bdWrapper.dart';
+import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
-class MenuLateral extends StatelessWidget {
+class MenuLateral extends StatefulWidget {
+  final FirebaseUser usuarioFB;
+
+  MenuLateral({this.usuarioFB});
+
+  @override
+  _MenuLateralState createState() => _MenuLateralState();
+}
+
+class _MenuLateralState extends State<MenuLateral> {
+  final ServicoAutenticacao _servico = ServicoAutenticacao();
+  Usuario usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    ServicoBancoLocal().obterUsuario(widget.usuarioFB.uid).then((user) {
+      setState(() => usuario = user);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            // accountName: Text(userInfo != null ? userInfo.fullname : ''),
-            // accountEmail: Text(userInfo != null ? userInfo.email : ''),
-            // currentAccountPicture: CircleAvatar(
-            //   backgroundColor: Colors.white,
-            //   child: Text(
-            //     userInfo != null ? userInfo.fullname[0] : '',
-            //     style: TextStyle(
-            //       fontSize: 40.0,
-            //       color: Theme.of(context).primaryColor,
-            //     ),
-            //   ),
-            // ),
-            accountName: Text('Fulano'),
-            accountEmail: Text('fulano@email.com'),
+            accountName: Text(usuario != null ? usuario.nome : ''),
+            accountEmail: Text(usuario != null ? usuario.email : ''),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.account_circle),
+              child: Text(
+                usuario != null ? usuario.nome[0] : '',
+                style: TextStyle(
+                  fontSize: 40.0,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
             ),
           ),
           ListTile(
@@ -44,8 +64,18 @@ class MenuLateral extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text(Strings.sair),
-            onTap: () {
-              Navigator.pop(context);
+            onTap: () async {
+              bool confirmou = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        Alerta('Deseja realmente sair?'),
+                  ) ??
+                  false;
+              if (confirmou) {
+                Navigator.popUntil(
+                    context, ModalRoute.withName(Navigator.defaultRouteName));
+                _servico.logout();
+              }
             },
           ),
         ],

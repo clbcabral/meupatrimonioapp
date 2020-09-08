@@ -1,21 +1,25 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
-import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/pages/home/menuLateral.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:intl/intl.dart';
 
 class PatrimonioWidget extends StatefulWidget {
-  PatrimonioWidget({Key key}) : super(key: key);
+  final FirebaseUser usuario;
+  PatrimonioWidget({Key key, this.usuario}) : super(key: key);
   @override
   PatrimonioState createState() => PatrimonioState();
 }
 
-class PatrimonioState extends State<PatrimonioWidget> {
+class PatrimonioState extends State<PatrimonioWidget>
+    with WidgetsBindingObserver {
   bool _carregando = false;
   final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Objetivo> _objetivos;
@@ -25,6 +29,20 @@ class PatrimonioState extends State<PatrimonioWidget> {
   void initState() {
     super.initState();
     buscarDados();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      buscarDados();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   void buscarDados() async {
@@ -32,7 +50,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
       _carregando = true;
     });
     List<Future> operacoes = [
-      ServicoBancoLocal().listarObjetivos(),
+      ServicoBancoLocal().listarObjetivos(widget.usuario.uid),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
@@ -60,7 +78,9 @@ class PatrimonioState extends State<PatrimonioWidget> {
     ondeAportar.sort((a, b) => b.falta.compareTo(a.falta));
     return PaginaComTabsWidget(
       carregando: _carregando,
-      exibeDrawer: true,
+      drawer: MenuLateral(
+        usuarioFB: widget.usuario,
+      ),
       titulo: Strings.meuPatrimonio,
       corpo: corpoPatrimonio(),
       botaoAdicionar: null,
@@ -96,7 +116,10 @@ class PatrimonioState extends State<PatrimonioWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ObjetivosForm(objetivos: _objetivos)),
+                  builder: (context) => ObjetivosForm(
+                        objetivos: _objetivos,
+                        usuario: widget.usuario,
+                      )),
             ).then((value) => buscarDados())
           },
         ),
@@ -121,6 +144,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
                   return ItemPatrimonio(
                     objetivo: _objetivos[index],
                     callback: buscarDados,
+                    usuario: widget.usuario,
                   );
                 },
               )))

@@ -1,20 +1,25 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
-import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/sicronizador.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
+import 'package:provider/provider.dart';
 
 class AtivosWidget extends StatefulWidget {
   final String titulo;
   final String tipo;
+  final FirebaseUser usuario;
   AtivosWidget({
     this.titulo,
     this.tipo,
+    this.usuario,
   });
   @override
   AtivosState createState() => AtivosState();
@@ -35,8 +40,8 @@ class AtivosState extends State<AtivosWidget> {
 
   void buscarDados() async {
     List<Future> operacoes = [
-      ServicoBancoLocal().listarAtivos(widget.tipo),
-      ServicoBancoLocal().listarPercentuais(widget.tipo),
+      ServicoBancoLocal().listarAtivos(widget.usuario.uid, widget.tipo),
+      ServicoBancoLocal().listarPercentuais(widget.usuario.uid, widget.tipo),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
@@ -66,7 +71,7 @@ class AtivosState extends State<AtivosWidget> {
     double totalPesos = calcularPesos();
     return PaginaComTabsWidget(
       carregando: _carregando,
-      exibeDrawer: false,
+      drawer: null,
       titulo: widget.titulo,
       corpo: corpo(context, totalAtivos, totalPesos),
       graficos: GraficosWidget(
@@ -97,6 +102,7 @@ class AtivosState extends State<AtivosWidget> {
               builder: (context) {
                 Ativo ativo = Ativo.exemplo();
                 ativo.tipo = widget.tipo;
+                ativo.uid = widget.usuario.uid;
                 return AtivoForm(
                   ativo: ativo,
                   callback: buscarDados,

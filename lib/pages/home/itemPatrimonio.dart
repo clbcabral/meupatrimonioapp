@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
@@ -7,10 +8,12 @@ import 'package:meupatrimonio/pages/reserva/reservas.dart';
 class ItemPatrimonio extends StatelessWidget {
   final NumberFormat _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
   final Objetivo objetivo;
+  final FirebaseUser usuario;
   final Function callback;
   ItemPatrimonio({
     this.objetivo,
     this.callback,
+    this.usuario,
   });
 
   @override
@@ -26,11 +29,13 @@ class ItemPatrimonio extends StatelessWidget {
               widgetRota = ReservasWidget(
                 titulo: this.objetivo.nome,
                 tipo: this.objetivo.tipo,
+                usuario: this.usuario,
               );
             } else if (this.objetivo.ehUmAtivo()) {
               widgetRota = AtivosWidget(
                 titulo: this.objetivo.nome,
                 tipo: this.objetivo.tipo,
+                usuario: this.usuario,
               );
             }
             if (widgetRota != null) {

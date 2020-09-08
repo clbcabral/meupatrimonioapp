@@ -9,6 +9,7 @@ class Objetivo {
   double atual;
   double falta;
   int ordem;
+  String uid;
 
   Objetivo({
     this.id,
@@ -19,6 +20,7 @@ class Objetivo {
     this.atual,
     this.falta,
     this.ordem,
+    this.uid,
   });
 
   bool ehUmAtivo() {
@@ -35,17 +37,6 @@ class Objetivo {
     return REVERSA_EMERGENCIA == this.tipo;
   }
 
-  Objetivo.exemplo() {
-    id = '';
-    nome = '';
-    tipo = '';
-    valor = 0.0;
-    ideal = 0.0;
-    atual = 0.0;
-    falta = 0.0;
-    ordem = 0;
-  }
-
   Objetivo.fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
     this.nome = map['nome'];
@@ -55,6 +46,7 @@ class Objetivo {
     this.atual = map['atual'];
     this.falta = map['falta'];
     this.ordem = map['ordem'];
+    this.uid = map['uid'];
   }
 
   Map<String, dynamic> toMap() {
@@ -67,18 +59,12 @@ class Objetivo {
       'atual': atual,
       'falta': falta,
       'ordem': ordem,
+      'uid': uid,
     };
   }
 
   bool equalTo(Objetivo objetivo) {
-    return this.id == objetivo.id &&
-        this.nome == objetivo.nome &&
-        this.tipo == objetivo.tipo &&
-        this.valor == objetivo.valor &&
-        this.ideal == objetivo.ideal &&
-        this.atual == objetivo.atual &&
-        this.falta == objetivo.falta &&
-        this.ordem == objetivo.ordem;
+    return this.id == objetivo.id && this.ideal == objetivo.ideal;
   }
 
   @override
@@ -92,6 +78,7 @@ class Objetivo {
       'atual': atual,
       'falta': falta,
       'ordem': ordem,
+      'uid': uid,
     }.toString();
   }
 }

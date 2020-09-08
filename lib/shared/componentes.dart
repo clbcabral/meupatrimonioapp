@@ -201,7 +201,7 @@ class PaginaComTabsWidget extends StatefulWidget {
   final Widget corpo;
   final OndeAportarWidget ondeAportar;
   final GraficosWidget graficos;
-  final bool exibeDrawer;
+  final Widget drawer;
   final bool carregando;
   final FloatingActionButton botaoAdicionar;
 
@@ -212,7 +212,7 @@ class PaginaComTabsWidget extends StatefulWidget {
       this.graficos,
       this.ondeAportar,
       this.botaoAdicionar,
-      this.exibeDrawer,
+      this.drawer,
       this.carregando});
 
   PaginaComTabsState createState() => PaginaComTabsState();
@@ -243,7 +243,7 @@ class PaginaComTabsState extends State<PaginaComTabsWidget>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: widget.exibeDrawer ? MenuLateral() : null,
+      drawer: widget.drawer,
       appBar: AppBar(
         title: Text(
           widget.titulo,

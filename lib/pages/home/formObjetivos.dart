@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
-import 'package:meupatrimonio/services/bancoLocal.dart';
+import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/sicronizador.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class ObjetivosForm extends StatefulWidget {
   final List<Objetivo> objetivos;
-  ObjetivosForm({Key key, this.objetivos}) : super(key: key);
+  final FirebaseUser usuario;
+  ObjetivosForm({Key key, this.objetivos, this.usuario}) : super(key: key);
 
   @override
   ObjetivosFormState createState() => ObjetivosFormState();
@@ -45,6 +48,7 @@ class ObjetivosFormState extends State<ObjetivosForm> {
               _chave.currentState.showSnackBar(snak);
             } else {
               await ServicoBancoLocal().atualizarObjetivos(widget.objetivos);
+              ServicoSincronizador(widget.usuario.uid).sincronizarObjetivos();
               Navigator.pop(context);
             }
           },

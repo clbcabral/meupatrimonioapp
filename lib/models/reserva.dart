@@ -3,12 +3,14 @@ class Reserva {
   String nome;
   double valor;
   String tipo;
+  String uid;
 
   Reserva({
     this.id,
     this.nome,
     this.valor,
     this.tipo,
+    this.uid,
   });
 
   Reserva.exemplo() {
@@ -16,6 +18,7 @@ class Reserva {
     nome = '';
     valor = 0.0;
     tipo = '';
+    uid = '';
   }
 
   Reserva.fromMap(Map<String, dynamic> map) {
@@ -23,6 +26,7 @@ class Reserva {
     this.nome = map['nome'];
     this.valor = map['valor'];
     this.tipo = map['tipo'];
+    this.uid = map['uid'];
   }
 
   Map<String, dynamic> toMap() {
@@ -31,6 +35,7 @@ class Reserva {
       'nome': nome,
       'valor': valor,
       'tipo': tipo,
+      'uid': uid,
     };
   }
 
@@ -38,7 +43,8 @@ class Reserva {
     return this.id == reserva.id &&
         this.nome == reserva.nome &&
         this.valor == reserva.valor &&
-        this.tipo == reserva.tipo;
+        this.tipo == reserva.tipo &&
+        this.uid == reserva.uid;
   }
 
   Reserva clone() {
@@ -47,6 +53,7 @@ class Reserva {
       nome: this.nome,
       valor: this.valor,
       tipo: this.tipo,
+      uid: this.uid,
     );
   }
 
@@ -57,6 +64,7 @@ class Reserva {
       'nome': nome,
       'valor': valor,
       'tipo': tipo,
+      'uid': uid,
     }.toString();
   }
 }
