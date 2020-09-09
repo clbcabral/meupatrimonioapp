@@ -118,12 +118,7 @@ class AtivosState extends State<AtivosWidget> {
           )
         },
       ),
-      acoes: <Widget>[
-        IconButton(
-          icon: Icon(Icons.help),
-          onPressed: () => {},
-        ),
-      ],
+      acoes: <Widget>[],
     );
   }
 

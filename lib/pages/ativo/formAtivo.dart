@@ -118,7 +118,7 @@ class AtivoFormState extends State<AtivoForm> {
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'Ticker',
+          labelText: Strings.ticker,
           hintText: getTickerHint(),
         ),
         textCapitalization: TextCapitalization.characters,
@@ -136,7 +136,7 @@ class AtivoFormState extends State<AtivoForm> {
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'Quantidade',
+          labelText: Strings.quantidade,
         ),
         keyboardType: TextInputType.numberWithOptions(decimal: false),
         inputFormatters: [
@@ -150,7 +150,7 @@ class AtivoFormState extends State<AtivoForm> {
       Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Peso',
+            Strings.peso,
             style: TextStyle(fontSize: 16, color: Colors.grey),
           )),
       Slider(
@@ -189,8 +189,8 @@ class AtivoFormState extends State<AtivoForm> {
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'Descriçao',
-          hintText: 'Tesouro Direto IPCA+ 2045',
+          labelText: Strings.descricao,
+          hintText: Strings.dicaTesouro,
         ),
         textCapitalization: TextCapitalization.characters,
         onChanged: (val) {
@@ -210,7 +210,7 @@ class AtivoFormState extends State<AtivoForm> {
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'Quantidade',
+          labelText: Strings.quantidade,
         ),
         keyboardType: TextInputType.numberWithOptions(decimal: false),
         inputFormatters: [
@@ -247,7 +247,7 @@ class AtivoFormState extends State<AtivoForm> {
       Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Peso',
+            Strings.peso,
             style: TextStyle(fontSize: 16, color: Colors.grey),
           )),
       Slider(
@@ -308,7 +308,7 @@ class AtivoFormState extends State<AtivoForm> {
         resultado.isEmpty ||
         resultado[0]['quoteType'] != 'EQUITY') {
       SnackBar snack = SnackBar(
-        content: Text('Ticker inválido ou não identificado.'),
+        content: Text(Strings.tickerInvalido),
       );
       _chaveScaffold.currentState.showSnackBar(snack);
     } else {

@@ -70,8 +70,8 @@ class GraficosWidgetState extends State<GraficosWidget> {
               });
             },
             children: [
-              corpoGraficos(context, 'Posição atual', widget.seriesAtual),
-              corpoGraficos(context, 'Posição ideal', widget.seriesIdeal),
+              corpoGraficos(context, Strings.posicaoAtual, widget.seriesAtual),
+              corpoGraficos(context, Strings.posicaoIdeal, widget.seriesIdeal),
             ],
           ),
         ),
@@ -92,7 +92,7 @@ class GraficosWidgetState extends State<GraficosWidget> {
     });
     if (!possuiValor) {
       return Center(
-        child: Text('Ainda sem dados.'),
+        child: Text(Strings.semDados),
       );
     }
     return Column(children: [
@@ -155,7 +155,7 @@ class OndeAportarState extends State<OndeAportarWidget> {
       Padding(
         padding: EdgeInsets.all(15),
         child: Text(
-          'Abaixo encontram-se os ativos ordenados por quanto falta percentualmente para alcançar seu objetivo.',
+          Strings.dicaPercentual,
           style: const TextStyle(fontSize: 14),
         ),
       ),

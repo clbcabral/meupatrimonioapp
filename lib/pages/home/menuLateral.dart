@@ -67,7 +67,7 @@ class _MenuLateralState extends State<MenuLateral> {
               bool confirmou = await showDialog(
                     context: context,
                     builder: (BuildContext context) =>
-                        Alerta('Deseja realmente sair?'),
+                        Alerta(Strings.desejaSair),
                   ) ??
                   false;
               if (confirmou) {

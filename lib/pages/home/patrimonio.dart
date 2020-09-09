@@ -102,10 +102,6 @@ class PatrimonioState extends State<PatrimonioWidget> {
       ),
       acoes: <Widget>[
         IconButton(
-          icon: Icon(Icons.help),
-          onPressed: () => {},
-        ),
-        IconButton(
           icon: Icon(Icons.settings),
           onPressed: () => {
             Navigator.push(

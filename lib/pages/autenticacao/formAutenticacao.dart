@@ -47,7 +47,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
 
   Widget title(bool isRegister) {
     return Text(
-      isRegister ? 'Registro' : 'Login',
+      isRegister ? Strings.registro : Strings.login,
       style: TextStyle(
         color: Colors.white,
       ),
@@ -55,7 +55,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
   }
 
   Widget titulo(bool isRegistro) {
-    return Text(isRegistro ? 'Login' : 'Registro');
+    return Text(isRegistro ? Strings.login : Strings.registro);
   }
 
   @override
@@ -118,7 +118,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                     autovalidate: _email.isNotEmpty,
                     validator: validadorEmail,
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: Strings.email,
                     ),
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (val) {
@@ -131,7 +131,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                     autovalidate: _senha.isNotEmpty,
                     validator: validadorSenha,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      labelText: Strings.senha,
                     ),
                     obscureText: _obscurePassword,
                     onChanged: (val) => setState(() => _senha = val),
@@ -144,7 +144,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                           validator: (val) =>
                               validadorConfirmacaoSenha(val, _senha),
                           decoration: InputDecoration(
-                            labelText: 'Senha (confirmação)',
+                            labelText: Strings.senhaConfirmacao,
                           ),
                           obscureText: _obscurePasswordConfirm,
                           onChanged: (val) {
@@ -159,7 +159,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                           autovalidate: _nome.isNotEmpty,
                           validator: validadorNome,
                           decoration: InputDecoration(
-                            labelText: 'Nome completo',
+                            labelText: Strings.nomeCompleto,
                           ),
                           textCapitalization: TextCapitalization.words,
                           onChanged: (val) => setState(() => _nome = val),
@@ -214,36 +214,36 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
 
 String validadorEmail(val) {
   if (val.isEmpty) {
-    return 'O email é obrigatório.';
+    return Strings.validacaoEmailObrigatorio;
   }
   if (!RegExp(
           r'^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
       .hasMatch(val)) {
-    return 'Email inválido.';
+    return Strings.validacaoEmailInvalido;
   }
   return null;
 }
 
 String validadorSenha(val) {
   if (val.length < 6) {
-    return 'A senha deve ter 6 caracteres ou mais.';
+    return Strings.validacaoTamanhoSenha;
   }
   return null;
 }
 
 String validadorConfirmacaoSenha(val, senha) {
   if (val.isEmpty) {
-    return 'Campo requerido.';
+    return Strings.validacaoCampoRequerido;
   }
   if (val != senha) {
-    return 'As senhas não são iguais.';
+    return Strings.validacaoSenhasIguais;
   }
   return null;
 }
 
 String validadorNome(val) {
   if (val.isEmpty) {
-    return 'Campo requerido.';
+    return Strings.validacaoCampoRequerido;
   }
   return null;
 }

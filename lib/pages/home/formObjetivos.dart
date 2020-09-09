@@ -33,17 +33,13 @@ class ObjetivosFormState extends State<ObjetivosForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _chave,
-      appBar: AppBar(title: Text('Objetivos'), actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.help),
-          onPressed: () => {},
-        ),
+      appBar: AppBar(title: Text(Strings.objetivos), actions: <Widget>[
         IconButton(
           icon: Icon(Icons.save),
           onPressed: () async {
             if (calcularTotal() != 100.0) {
               var snak = SnackBar(
-                content: Text('A soma dos objetivos deve ser igual a 100%.'),
+                content: Text(Strings.validacaoSomaPercentual),
               );
               _chave.currentState.showSnackBar(snak);
             } else {
@@ -79,7 +75,7 @@ class ObjetivosFormState extends State<ObjetivosForm> {
           Padding(
             padding: EdgeInsets.all(15),
             child: Text(
-              'Informe os percentuais de cada tipo de ativo em seu patrimônio. A soma dos percentuais deve ser igual a 100%.',
+              Strings.dicaObjetivosPercentuais,
               style: const TextStyle(fontSize: 14),
             ),
           ),

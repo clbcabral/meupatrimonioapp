@@ -53,17 +53,10 @@ class ReservasState extends State<ReservasWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.titulo,
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.help),
-              onPressed: () => {},
-            ),
-          ],
-        ),
+            title: Text(
+          widget.titulo,
+          style: TextStyle(fontSize: 16),
+        )),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () => {

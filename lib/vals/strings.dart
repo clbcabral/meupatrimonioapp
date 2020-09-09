@@ -27,6 +27,14 @@ class Strings {
       "Apenas duas casas decimais são aceitas.";
   static String validacaoPontoVirgula = "Utilize ponto ao invés de vírgula.";
   static String validacaoPontos = "Informe apenas um ponto.";
+  static String validacaoEmailObrigatorio = "O e-mail é obrigatório.";
+  static String validacaoEmailInvalido = "E-mail inválido.";
+  static String validacaoTamanhoSenha =
+      "A senha deve ter 6 caracteres ou mais.";
+  static String validacaoCampoRequerido = "Campo requerido.";
+  static String validacaoSenhasIguais = "As senhas não são iguais.";
+  static String validacaoSomaPercentual =
+      "A soma dos objetivos deve ser igual a 100%.";
   static String valor = "Valor";
   static String salvar = "Salvar";
   static String adicionar = "Adicionar";
@@ -36,4 +44,23 @@ class Strings {
   static String objetivos = "Objetivos";
   static String sobre = "Sobre";
   static String sair = "Sair";
+  static String posicaoAtual = "Posição atual";
+  static String posicaoIdeal = "Posição ideal";
+  static String semDados = "Ainda sem dados.";
+  static String dicaPercentual =
+      "Abaixo encontram-se os ativos ordenados por quanto falta percentualmente para alcançar seu objetivo.";
+  static String dicaObjetivosPercentuais =
+      "Informe os percentuais de cada tipo de ativo em seu patrimônio. A soma dos percentuais deve ser igual a 100%.";
+  static String ticker = "Ticker";
+  static String quantidade = "Quantidade";
+  static String peso = "Peso";
+  static String dicaTesouro = "Tesouro Direto IPCA+ 2045";
+  static String tickerInvalido = "Ticker inválido ou não identificado.";
+  static String registro = "Registro";
+  static String login = "Login";
+  static String email = "E-mail";
+  static String senha = "Senha";
+  static String senhaConfirmacao = "Senha (confirmação)";
+  static String nomeCompleto = "Nome completo";
+  static String desejaSair = "Deseja realmente sair?";
 }
