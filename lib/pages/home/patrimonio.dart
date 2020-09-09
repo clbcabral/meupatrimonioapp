@@ -1,13 +1,16 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:intl/intl.dart';
 
@@ -18,8 +21,7 @@ class PatrimonioWidget extends StatefulWidget {
   PatrimonioState createState() => PatrimonioState();
 }
 
-class PatrimonioState extends State<PatrimonioWidget>
-    with WidgetsBindingObserver {
+class PatrimonioState extends State<PatrimonioWidget> {
   bool _carregando = false;
   final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Objetivo> _objetivos;
@@ -28,35 +30,28 @@ class PatrimonioState extends State<PatrimonioWidget>
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration(seconds: 3), () => buscarDados());
     buscarDados();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      buscarDados();
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   void buscarDados() async {
     setState(() {
       _carregando = true;
     });
-    List<Future> operacoes = [
-      ServicoBancoLocal().listarObjetivos(widget.usuario.uid),
-    ];
-    List<dynamic> data = await Future.wait(operacoes);
+    List<Objetivo> objetivos =
+        await ServicoBancoLocal().listarObjetivos(widget.usuario.uid);
     setState(() {
       _carregando = false;
-      _objetivos = data[0];
+      _objetivos = objetivos;
     });
+  }
+
+  void atualizarCotacoes() async {
+    List<Ativo> ativos =
+        await ServicoBancoLocal().listarTodosAtivos(widget.usuario.uid);
+    ativos = ativos.where((element) => element.tipo != ATIVO_RF).toList();
+    await ServicoYahooFinance().atualizarCotacoes(ativos);
+    buscarDados();
   }
 
   double calcularTotal() {
@@ -136,7 +131,7 @@ class PatrimonioState extends State<PatrimonioWidget>
       Expanded(
           child: RefreshIndicator(
               onRefresh: () async {
-                buscarDados();
+                atualizarCotacoes();
               },
               child: ListView.builder(
                 itemCount: _objetivos.length,

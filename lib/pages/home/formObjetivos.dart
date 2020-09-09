@@ -48,7 +48,8 @@ class ObjetivosFormState extends State<ObjetivosForm> {
               _chave.currentState.showSnackBar(snak);
             } else {
               await ServicoBancoLocal().atualizarObjetivos(widget.objetivos);
-              ServicoSincronizador(widget.usuario.uid).sincronizarObjetivos();
+              ServicoSincronizador(widget.usuario.uid)
+                  .sincronizarObjetivosParaRemoto();
               Navigator.pop(context);
             }
           },

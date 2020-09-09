@@ -159,6 +159,33 @@ class ServicoBancoLocal {
         (objetivos) => objetivos.map((map) => Objetivo.fromMap(map)).toList());
   }
 
+  Future removerObjetivos(List<Objetivo> objetivos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    objetivos.forEach((o) {
+      batch.delete('objetivos', where: 'id = ?', whereArgs: [o.id]);
+    });
+    await batch.commit();
+  }
+
+  Future removerAtivos(List<Ativo> ativos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    ativos.forEach((o) {
+      batch.delete('ativos', where: 'id = ?', whereArgs: [o.id]);
+    });
+    await batch.commit();
+  }
+
+  Future removerReservas(List<Reserva> reservas) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    reservas.forEach((o) {
+      batch.delete('reservas', where: 'id = ?', whereArgs: [o.id]);
+    });
+    await batch.commit();
+  }
+
   Future<List<Percentual>> listarPercentuais(
       String uid, String tipoAtivo) async {
     Database db = await this.db;
@@ -190,6 +217,16 @@ class ServicoBancoLocal {
     objetivos.forEach((objetivo) {
       batch.update('objetivos', {'ideal': objetivo.ideal},
           where: 'id = ?', whereArgs: [objetivo.id]);
+    });
+    await batch.commit();
+  }
+
+  Future atualizarAtivos(List<Ativo> ativos) async {
+    Database db = await this.db;
+    Batch batch = db.batch();
+    ativos.forEach((ativo) {
+      batch.update('ativos', ativo.toMap(),
+          where: 'id = ?', whereArgs: [ativo.id]);
     });
     await batch.commit();
   }

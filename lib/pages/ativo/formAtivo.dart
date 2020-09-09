@@ -50,7 +50,7 @@ class AtivoFormState extends State<AtivoForm> {
 
   @override
   void dispose() {
-    ServicoSincronizador(widget.ativo.uid).sincronizarAtivos();
+    ServicoSincronizador(widget.ativo.uid).sincronizarAtivosParaRemoto();
     super.dispose();
   }
 
@@ -353,7 +353,7 @@ class AtivoFormState extends State<AtivoForm> {
     ehEdicao
         ? await ServicoBancoLocal().atualizarAtivo(ativo)
         : await ServicoBancoLocal().adicionarAtivo(ativo);
-    ServicoSincronizador(widget.ativo.uid).sincronizarAtivos();
+    ServicoSincronizador(widget.ativo.uid).sincronizarAtivosParaRemoto();
     Navigator.pop(context);
     widget.callback();
     setState(() {

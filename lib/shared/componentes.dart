@@ -3,7 +3,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/percentual.dart';
-import 'package:meupatrimonio/pages/home/menuLateral.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class Loader extends StatelessWidget {

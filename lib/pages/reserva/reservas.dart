@@ -30,7 +30,7 @@ class ReservasState extends State<ReservasWidget> {
 
   @override
   void dispose() {
-    ServicoSincronizador(widget.usuario.uid).sincronizarReservas();
+    ServicoSincronizador(widget.usuario.uid).sincronizarReservasParaRemoto();
     super.dispose();
   }
 

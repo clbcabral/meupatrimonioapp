@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
-import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/models/usuario.dart';
 

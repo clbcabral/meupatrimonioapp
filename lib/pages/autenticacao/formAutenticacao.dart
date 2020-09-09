@@ -3,6 +3,7 @@ import 'package:meupatrimonio/models/usuario.dart';
 import 'package:meupatrimonio/services/autenticacao.dart';
 import 'package:meupatrimonio/services/bdWrapper.dart';
 import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
@@ -94,11 +95,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
         ],
       ),
       body: _carregando
-          ? Container(
-              child: Center(
-                child: Text('Carregando...'),
-              ),
-            )
+          ? Loader()
           : Form(
               key: _formKey,
               child: ListView(

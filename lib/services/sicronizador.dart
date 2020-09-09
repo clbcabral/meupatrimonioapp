@@ -14,31 +14,28 @@ class ServicoSincronizador {
     this._remoto = ServicoBancoRemoto(this.uid);
   }
 
-  void sincronizarParaBDRemovo() async {
-    sincronizarObjetivos();
-    sincronizarAtivos();
-    sincronizarReservas();
+  void sincronizarParaBDRemoto() async {
+    sincronizarObjetivosParaRemoto();
+    sincronizarAtivosParaRemoto();
+    sincronizarReservasParaRemoto();
   }
 
   Future sincronizarParaBDLocal() async {
+    final List<Future> operacoes = [];
     if (await _local.obterUsuario(uid) == null) {
-      final List<Future> obterEAdicionar = [
-        _remoto
-            .obterUsuario()
-            .then((usuario) => _local.adicionarUsuario(usuario)),
-        _remoto.listarObjetivos().then(
-            (objetivosRemotos) => _local.adicionarObjetivos(objetivosRemotos)),
-        _remoto
-            .listarAtivos()
-            .then((ativosRemotos) => _local.adicionarAtivos(ativosRemotos)),
-        _remoto.listarReservas().then(
-            (reservasRemotas) => _local.adicionarReservas(reservasRemotas)),
-      ];
-      await Future.wait(obterEAdicionar);
+      operacoes.add(_remoto
+          .obterUsuario()
+          .then((usuario) => _local.adicionarUsuario(usuario)));
     }
+    operacoes.addAll([
+      sincronizarObjetivosParaLocal(),
+      sincronizarAtivosParaLocal(),
+      sincronizarReservasParaLocal(),
+    ]);
+    await Future.wait(operacoes);
   }
 
-  void sincronizarObjetivos() async {
+  void sincronizarObjetivosParaRemoto() async {
     List<Objetivo> objetivosRemotos = await _remoto.listarObjetivos();
     List<Objetivo> objetivosLocais = await _local.listarObjetivos(uid);
     List<Objetivo> objetivosSomenteRemotos = objetivosRemotos
@@ -53,7 +50,24 @@ class ServicoSincronizador {
     _remoto.adicionarObjetivos(objetivosSomenteLocais);
   }
 
-  void sincronizarAtivos() async {
+  Future sincronizarObjetivosParaLocal() async {
+    List<Objetivo> objetivosRemotos = await _remoto.listarObjetivos();
+    List<Objetivo> objetivosLocais = await _local.listarObjetivos(uid);
+    List<Objetivo> objetivosSomenteRemotos = objetivosRemotos
+        .where((cloud) =>
+            objetivosLocais.where((local) => local.equalTo(cloud)).length == 0)
+        .toList();
+    List<Objetivo> objetivosSomenteLocais = objetivosLocais
+        .where((local) =>
+            objetivosRemotos.where((cloud) => cloud.equalTo(local)).length == 0)
+        .toList();
+    await Future.wait([
+      _local.removerObjetivos(objetivosSomenteLocais),
+      _local.adicionarObjetivos(objetivosSomenteRemotos),
+    ]);
+  }
+
+  void sincronizarAtivosParaRemoto() async {
     List<Ativo> ativosRemotos = await _remoto.listarAtivos();
     List<Ativo> avitosLocais = await _local.listarTodosAtivos(uid);
     List<Ativo> ativosSomenteRemotos = ativosRemotos
@@ -68,7 +82,24 @@ class ServicoSincronizador {
     _remoto.adicionarAtivos(ativosSomenteLocais);
   }
 
-  void sincronizarReservas() async {
+  Future sincronizarAtivosParaLocal() async {
+    List<Ativo> ativosRemotos = await _remoto.listarAtivos();
+    List<Ativo> avitosLocais = await _local.listarTodosAtivos(uid);
+    List<Ativo> ativosSomenteRemotos = ativosRemotos
+        .where((cloud) =>
+            avitosLocais.where((local) => local.equalTo(cloud)).length == 0)
+        .toList();
+    List<Ativo> ativosSomenteLocais = avitosLocais
+        .where((local) =>
+            ativosRemotos.where((cloud) => cloud.equalTo(local)).length == 0)
+        .toList();
+    await Future.wait([
+      _local.removerAtivos(ativosSomenteLocais),
+      _local.adicionarAtivos(ativosSomenteRemotos),
+    ]);
+  }
+
+  void sincronizarReservasParaRemoto() async {
     List<Reserva> reservasRemotas = await _remoto.listarReservas();
     List<Reserva> reservasLocais = await _local.listarTodasReservas(uid);
     List<Reserva> reservasSomenteRemotas = reservasRemotas
@@ -81,5 +112,22 @@ class ServicoSincronizador {
         .toList();
     _remoto.removerReservas(reservasSomenteRemotas);
     _remoto.adicionarReservas(reservasSomenteLocais);
+  }
+
+  Future sincronizarReservasParaLocal() async {
+    List<Reserva> reservasRemotas = await _remoto.listarReservas();
+    List<Reserva> reservasLocais = await _local.listarTodasReservas(uid);
+    List<Reserva> reservasSomenteRemotas = reservasRemotas
+        .where((cloud) =>
+            reservasLocais.where((local) => local.equalTo(cloud)).length == 0)
+        .toList();
+    List<Reserva> reservasSomenteLocais = reservasLocais
+        .where((local) =>
+            reservasRemotas.where((cloud) => cloud.equalTo(local)).length == 0)
+        .toList();
+    await Future.wait([
+      _local.removerReservas(reservasSomenteLocais),
+      _local.adicionarReservas(reservasSomenteRemotas),
+    ]);
   }
 }

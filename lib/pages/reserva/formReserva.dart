@@ -36,7 +36,7 @@ class ReservaFormState extends State<ReservaForm> {
 
   @override
   void dispose() {
-    ServicoSincronizador(widget.reserva.uid).sincronizarReservas();
+    ServicoSincronizador(widget.reserva.uid).sincronizarReservasParaRemoto();
     super.dispose();
   }
 
@@ -113,7 +113,8 @@ class ReservaFormState extends State<ReservaForm> {
                 ehEdicao
                     ? await ServicoBancoLocal().atualizarReserva(reserva)
                     : await ServicoBancoLocal().adicionarReserva(reserva);
-                ServicoSincronizador(widget.reserva.uid).sincronizarReservas();
+                ServicoSincronizador(widget.reserva.uid)
+                    .sincronizarReservasParaRemoto();
                 Navigator.pop(context);
                 widget.callback();
               }

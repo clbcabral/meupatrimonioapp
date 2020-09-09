@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/usuario.dart';
 import 'package:meupatrimonio/services/autenticacao.dart';
 import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/bdWrapper.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 

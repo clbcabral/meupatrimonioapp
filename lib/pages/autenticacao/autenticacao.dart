@@ -20,18 +20,6 @@ class _AutenticacaoWidgetState extends State<AutenticacaoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    switch (metodo) {
-      case MetodoAutenticacao.Login:
-        return AutenticacaoForm(
-            callback: trocaView, metodo: MetodoAutenticacao.Login);
-        break;
-      case MetodoAutenticacao.Registro:
-        return AutenticacaoForm(
-            callback: trocaView, metodo: MetodoAutenticacao.Registro);
-        break;
-      default:
-        return Text('Erro na autenticação.');
-        break;
-    }
+    return AutenticacaoForm(callback: trocaView, metodo: metodo);
   }
 }

@@ -7,10 +7,10 @@ import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
 import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
-import 'package:provider/provider.dart';
 
 class AtivosWidget extends StatefulWidget {
   final String titulo;
@@ -45,10 +45,16 @@ class AtivosState extends State<AtivosWidget> {
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      print(data);
       _ativos = data[0];
       _percentuais = data[1];
     });
+  }
+
+  void atualizarCotacoes() async {
+    if (widget.tipo != ATIVO_RF) {
+      await ServicoYahooFinance().atualizarCotacoes(_ativos);
+    }
+    buscarDados();
   }
 
   double calcularTotal() {
@@ -157,7 +163,7 @@ class AtivosState extends State<AtivosWidget> {
         Expanded(
             child: RefreshIndicator(
           onRefresh: () async {
-            buscarDados();
+            atualizarCotacoes();
           },
           child: ListView.builder(
             itemCount: _ativos.length,
