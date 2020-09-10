@@ -15,6 +15,7 @@ class MeuPatrimonioApp extends StatelessWidget {
     return StreamProvider<FirebaseUser>(
       create: (_) => ServicoAutenticacao().user,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: ChecaUsuarioWidget(),
         title: Strings.meuPatrimonio,
         theme: ThemeData(
