@@ -84,16 +84,14 @@ class PatrimonioState extends State<PatrimonioWidget> {
           id: 'atual',
           domainFn: (Objetivo obj, _) => obj.nome,
           measureFn: (Objetivo obj, _) => obj.atual,
-          labelAccessorFn: (Objetivo obj, _) =>
-              '${obj.nome} ${_fmtPct.format(obj.atual)}%',
+          labelAccessorFn: (Objetivo obj, _) => '${_fmtPct.format(obj.atual)}',
           data: _objetivos,
         ),
         seriesIdeal: charts.Series<Objetivo, String>(
           id: 'ideal',
           domainFn: (Objetivo obj, _) => obj.nome,
           measureFn: (Objetivo obj, _) => obj.ideal,
-          labelAccessorFn: (Objetivo obj, _) =>
-              '${obj.nome} ${_fmtPct.format(obj.ideal)}%',
+          labelAccessorFn: (Objetivo obj, _) => '${_fmtPct.format(obj.ideal)}',
           data: _objetivos,
         ),
       ),

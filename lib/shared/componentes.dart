@@ -119,12 +119,11 @@ class GraficosWidgetState extends State<GraficosWidget> {
                       ? charts.BehaviorPosition.bottom
                       : charts.BehaviorPosition.end,
               horizontalFirst: false,
-              cellPadding: EdgeInsets.all(4),
               showMeasures: false,
               entryTextStyle: charts.TextStyleSpec(fontSize: 12),
               outsideJustification: charts.OutsideJustification.middleDrawArea,
               legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-              desiredMaxRows: 4,
+              desiredMaxRows: 5,
               measureFormatter: (num value) {
                 return value == null ? '-' : '$value%';
               },
