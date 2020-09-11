@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meupatrimonio/models/reserva.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:uuid/uuid.dart';
@@ -32,12 +31,6 @@ class ReservaFormState extends State<ReservaForm> {
     _tipo = widget.reserva.tipo;
     _nomeController.text = widget.reserva.nome;
     _valorController.text = widget.reserva.valor.toString();
-  }
-
-  @override
-  void dispose() {
-    ServicoSincronizador(widget.reserva.uid).sincronizarReservasParaRemoto();
-    super.dispose();
   }
 
   Widget corpo(bool ehEdicao) {
@@ -111,10 +104,10 @@ class ReservaFormState extends State<ReservaForm> {
                     uid: widget.reserva.uid,
                     tipo: _tipo);
                 ehEdicao
-                    ? await ServicoBancoLocal().atualizarReserva(reserva)
-                    : await ServicoBancoLocal().adicionarReserva(reserva);
-                ServicoSincronizador(widget.reserva.uid)
-                    .sincronizarReservasParaRemoto();
+                    ? await ServicoBancoRemoto(widget.reserva.uid)
+                        .atualizarReserva(reserva)
+                    : await ServicoBancoRemoto(widget.reserva.uid)
+                        .adicionarReserva(reserva);
                 Navigator.pop(context);
                 widget.callback();
               }
@@ -143,7 +136,8 @@ class ReservaFormState extends State<ReservaForm> {
                           ) ??
                           false;
                       if (confirmou) {
-                        ServicoBancoLocal().removerReserva(widget.reserva);
+                        ServicoBancoRemoto(widget.reserva.uid)
+                            .removerReserva(widget.reserva);
                         widget.callback();
                         Navigator.pop(context);
                       }

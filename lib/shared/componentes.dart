@@ -9,6 +9,7 @@ class Loader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       child: Center(
         child: SizedBox(
           child: CircularProgressIndicator(),
@@ -240,45 +241,47 @@ class PaginaComTabsState extends State<PaginaComTabsWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: widget.drawer,
-      appBar: AppBar(
-        title: Text(
-          widget.titulo,
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: widget.acoes,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              text: Strings.consolidado,
+    return widget.carregando
+        ? Loader()
+        : Scaffold(
+            drawer: widget.drawer,
+            appBar: AppBar(
+              title: Text(
+                widget.titulo,
+                style: TextStyle(fontSize: 16),
+              ),
+              actions: widget.acoes,
+              bottom: TabBar(
+                controller: _tabController,
+                tabs: [
+                  Tab(
+                    text: Strings.consolidado,
+                  ),
+                  Tab(
+                    text: Strings.graficos,
+                  ),
+                  Tab(
+                    text: Strings.ondeAportar,
+                  ),
+                ],
+              ),
             ),
-            Tab(
-              text: Strings.graficos,
+            floatingActionButton:
+                _tabController.index == 0 ? widget.botaoAdicionar : null,
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                Tab(
+                  child: widget.corpo,
+                ),
+                Tab(
+                  child: widget.graficos,
+                ),
+                Tab(
+                  child: widget.ondeAportar,
+                ),
+              ],
             ),
-            Tab(
-              text: Strings.ondeAportar,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton:
-          _tabController.index == 0 ? widget.botaoAdicionar : null,
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          Tab(
-            child: widget.corpo,
-          ),
-          Tab(
-            child: widget.graficos,
-          ),
-          Tab(
-            child: widget.ondeAportar,
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

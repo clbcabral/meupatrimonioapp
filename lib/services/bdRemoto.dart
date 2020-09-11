@@ -3,6 +3,7 @@ import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/models/usuario.dart';
+import 'package:meupatrimonio/vals/constantes.dart';
 
 class ServicoBancoRemoto {
   final String uid;
@@ -31,66 +32,124 @@ class ServicoBancoRemoto {
     await batch.commit();
   }
 
-  Future removerObjetivos(List<Objetivo> objetivos) async {
+  Future removerAtivo(Ativo ativo) async {
+    await db.collection('ativos').document(ativo.id).delete();
+  }
+
+  Future removerReserva(Reserva reserva) async {
+    await db.collection('reservas').document(reserva.id).delete();
+  }
+
+  Future adicionarAtivo(Ativo ativo) async {
+    await db.collection('ativos').document(ativo.id).setData(ativo.toMap());
+  }
+
+  Future atualizarAtivo(Ativo ativo) async {
+    await db.collection('ativos').document(ativo.id).updateData(ativo.toMap());
+  }
+
+  Future adicionarReserva(Reserva reserva) async {
+    await db
+        .collection('reservas')
+        .document(reserva.id)
+        .setData(reserva.toMap());
+  }
+
+  Future atualizarReserva(Reserva reserva) async {
+    await db
+        .collection('reservas')
+        .document(reserva.id)
+        .updateData(reserva.toMap());
+  }
+
+  Future atualizarObjetivos(List<Objetivo> objetivos) async {
     WriteBatch batch = Firestore.instance.batch();
-    objetivos.forEach((o) {
-      batch.delete(db.collection('objetivos').document(o.id));
+    objetivos.forEach((objetivo) {
+      batch.updateData(
+        db.collection('objetivos').document(objetivo.id),
+        {'ideal': objetivo.ideal},
+      );
     });
     await batch.commit();
   }
 
-  Future removerAtivos(List<Ativo> ativos) async {
-    WriteBatch batch = Firestore.instance.batch();
-    ativos.forEach((o) {
-      batch.delete(db.collection('ativos').document(o.id));
-    });
-    await batch.commit();
-  }
-
-  Future removerReservas(List<Reserva> reservas) async {
-    WriteBatch batch = Firestore.instance.batch();
-    reservas.forEach((o) {
-      batch.delete(db.collection('reservas').document(o.id));
-    });
-    await batch.commit();
-  }
-
-  Future<List<Ativo>> listarAtivos() async {
-    return db.collection('ativos').getDocuments().then((snapshot) =>
-        snapshot.documents.map((map) => Ativo.fromMap(map.data)).toList());
-  }
-
-  Future adicionarAtivos(List<Ativo> ativos) async {
+  Future atualizarAtivos(List<Ativo> ativos) async {
     WriteBatch batch = Firestore.instance.batch();
     ativos.forEach((ativo) {
-      batch.setData(
+      batch.updateData(
         db.collection('ativos').document(ativo.id),
-        ativo.toMap(),
+        {'cotacao': ativo.cotacao},
       );
     });
     await batch.commit();
   }
 
-  Future adicionarReservas(List<Reserva> reservas) async {
-    WriteBatch batch = Firestore.instance.batch();
-    reservas.forEach((reserva) {
-      batch.setData(
-        db.collection('reservas').document(reserva.id),
-        reserva.toMap(),
-      );
-    });
-    await batch.commit();
+  Future<List<Ativo>> listarAtivos(String tipo) async {
+    return db
+        .collection('ativos')
+        .where('tipo', isEqualTo: tipo)
+        .getDocuments()
+        .then((snapshot) =>
+            snapshot.documents.map((map) => Ativo.fromMap(map.data)).toList());
+  }
+
+  Future<List<Ativo>> listarAtivosRendaVariavel() async {
+    return db
+        .collection('ativos')
+        .where('tipo',
+            whereIn: [ATIVO_ACAO, ATIVO_FII, ATIVO_REIT, ATIVO_STOCK])
+        .getDocuments()
+        .then((snapshot) =>
+            snapshot.documents.map((map) => Ativo.fromMap(map.data)).toList());
   }
 
   Future<List<Objetivo>> listarObjetivos() async {
-    return db.collection('objetivos').orderBy('ordem').getDocuments().then(
-        (snapshot) => snapshot.documents
-            .map((map) => Objetivo.fromMap(map.data))
+    List<Ativo> ativos = await db.collection('ativos').getDocuments().then(
+        (snapshot) =>
+            snapshot.documents.map((map) => Ativo.fromMap(map.data)).toList());
+    List<Reserva> reservas = await db
+        .collection('reservas')
+        .getDocuments()
+        .then((snapshot) => snapshot.documents
+            .map((map) => Reserva.fromMap(map.data))
             .toList());
+    double totalAtivos =
+        ativos.fold(0.0, (val, ativo) => val + (ativo.valor()));
+    double totalReservas =
+        reservas.fold(0.0, (val, reserva) => val + (reserva.valor));
+    return db
+        .collection('objetivos')
+        .orderBy('ordem')
+        .getDocuments()
+        .then((snapshot) => snapshot.documents.map((map) {
+              Objetivo objetivo = Objetivo.fromMap(map.data);
+              return _preencherValorObjetivo(
+                  objetivo, ativos, reservas, totalAtivos, totalReservas);
+            }).toList());
   }
 
-  Future<List<Reserva>> listarReservas() async {
-    return db.collection('reservas').getDocuments().then((snapshot) =>
-        snapshot.documents.map((map) => Reserva.fromMap(map.data)).toList());
+  Objetivo _preencherValorObjetivo(Objetivo objetivo, List<Ativo> ativos,
+      List<Reserva> reservas, double totalAtivos, double totalReservas) {
+    double totalTipoAtivos = ativos
+        .where((a) => objetivo.tipo == a.tipo)
+        .fold(0.0, (val, a) => val + (a.valor()));
+    double totalTipoReservas = reservas
+        .where((r) => objetivo.tipo == r.tipo)
+        .fold(0.0, (val, r) => val + (r.valor));
+    double total = totalTipoAtivos + totalTipoReservas;
+    objetivo.valor = total;
+    objetivo.atual = total / (totalAtivos + totalReservas);
+    objetivo.falta = objetivo.ideal - objetivo.atual;
+    return objetivo;
+  }
+
+  Future<List<Reserva>> listarReservas(String tipo) async {
+    return db
+        .collection('reservas')
+        .where('tipo', isEqualTo: tipo)
+        .getDocuments()
+        .then((snapshot) => snapshot.documents
+            .map((map) => Reserva.fromMap(map.data))
+            .toList());
   }
 }

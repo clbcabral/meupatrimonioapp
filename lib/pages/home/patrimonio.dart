@@ -7,10 +7,9 @@ import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/pages/home/formObjetivos.dart';
 import 'package:meupatrimonio/pages/home/itemPatrimonio.dart';
 import 'package:meupatrimonio/pages/home/menuLateral.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
-import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 import 'package:intl/intl.dart';
 
@@ -39,7 +38,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
       _carregando = true;
     });
     List<Objetivo> objetivos =
-        await ServicoBancoLocal().listarObjetivos(widget.usuario.uid);
+        await ServicoBancoRemoto(widget.usuario.uid).listarObjetivos();
     setState(() {
       _carregando = false;
       _objetivos = objetivos;
@@ -47,10 +46,12 @@ class PatrimonioState extends State<PatrimonioWidget> {
   }
 
   void atualizarCotacoes() async {
-    List<Ativo> ativos =
-        await ServicoBancoLocal().listarTodosAtivos(widget.usuario.uid);
-    ativos = ativos.where((element) => element.tipo != ATIVO_RF).toList();
-    await ServicoYahooFinance().atualizarCotacoes(ativos);
+    setState(() {
+      _carregando = true;
+    });
+    List<Ativo> ativos = await ServicoBancoRemoto(widget.usuario.uid)
+        .listarAtivosRendaVariavel();
+    await ServicoYahooFinance().atualizarCotacoes(widget.usuario.uid, ativos);
     buscarDados();
   }
 
@@ -74,7 +75,7 @@ class PatrimonioState extends State<PatrimonioWidget> {
     return PaginaComTabsWidget(
       carregando: _carregando,
       drawer: MenuLateral(
-        usuarioFB: widget.usuario,
+        usuario: widget.usuario,
       ),
       titulo: Strings.meuPatrimonio,
       corpo: corpoPatrimonio(),

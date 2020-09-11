@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:meupatrimonio/models/ativo.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 
 class ServicoYahooFinance {
@@ -21,21 +21,23 @@ class ServicoYahooFinance {
     return null;
   }
 
-  Future atualizarCotacoes(List<Ativo> ativos) async {
-    List tickers = ativos.map((e) => e.ticker.toUpperCase()).toList();
-    List<Future> operacoes = [
-      this.getTickersInfo([DOLAR_TICKER]),
-      this.getTickersInfo(tickers),
-    ];
-    List<dynamic> response = await Future.wait(operacoes);
-    double dolar = response[0]['quoteResponse']['result'][0]['bid'];
-    List resultados = response[1]['quoteResponse']['result'];
-    resultados.asMap().forEach((index, element) {
-      double cotacao = element['bid'];
-      Ativo ativo = ativos[index];
-      ativos[index].cotacao =
-          ativo.ehAtivoDolarizado() ? cotacao * dolar : cotacao;
-    });
-    return ServicoBancoLocal().atualizarAtivos(ativos);
+  Future atualizarCotacoes(String uid, List<Ativo> ativos) async {
+    if (ativos.isNotEmpty) {
+      List tickers = ativos.map((e) => e.ticker.toUpperCase()).toList();
+      List<Future> operacoes = [
+        this.getTickersInfo([DOLAR_TICKER]),
+        this.getTickersInfo(tickers),
+      ];
+      List<dynamic> response = await Future.wait(operacoes);
+      double dolar = response[0]['quoteResponse']['result'][0]['bid'];
+      List resultados = response[1]['quoteResponse']['result'];
+      resultados.forEach((element) {
+        double cotacao = element['bid'];
+        Ativo ativo =
+            ativos[ativos.indexWhere((e) => e.ticker == element['symbol'])];
+        ativo.cotacao = ativo.ehAtivoDolarizado() ? cotacao * dolar : cotacao;
+      });
+      return ServicoBancoRemoto(uid).atualizarAtivos(ativos);
+    }
   }
 }

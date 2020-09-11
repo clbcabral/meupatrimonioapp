@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/objetivo.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class ObjetivosForm extends StatefulWidget {
@@ -43,9 +42,8 @@ class ObjetivosFormState extends State<ObjetivosForm> {
               );
               _chave.currentState.showSnackBar(snak);
             } else {
-              await ServicoBancoLocal().atualizarObjetivos(widget.objetivos);
-              ServicoSincronizador(widget.usuario.uid)
-                  .sincronizarObjetivosParaRemoto();
+              await ServicoBancoRemoto(widget.usuario.uid)
+                  .atualizarObjetivos(widget.objetivos);
               Navigator.pop(context);
             }
           },
