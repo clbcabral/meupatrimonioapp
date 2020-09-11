@@ -1,6 +1,5 @@
 import 'package:meupatrimonio/models/objetivo.dart';
 import 'package:meupatrimonio/models/usuario.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
 import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:uuid/uuid.dart';
@@ -8,16 +7,13 @@ import 'package:uuid/uuid.dart';
 class BancoWrapper {
   final String uid;
   ServicoBancoRemoto _remoto;
-  ServicoBancoLocal _local;
 
   BancoWrapper(this.uid) {
     this._remoto = ServicoBancoRemoto(this.uid);
-    this._local = ServicoBancoLocal();
   }
 
   Future adicionarUsuario(Usuario usuario) async {
     await _remoto.adicionarUsuario(usuario);
-    await _local.adicionarUsuario(usuario);
   }
 
   Future adicionarObjetivos() async {
@@ -33,6 +29,5 @@ class BancoWrapper {
       ));
     });
     await _remoto.adicionarObjetivos(objetivos);
-    await _local.adicionarObjetivos(objetivos);
   }
 }

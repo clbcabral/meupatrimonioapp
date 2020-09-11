@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:meupatrimonio/models/reserva.dart';
 import 'package:meupatrimonio/pages/reserva/formReserva.dart';
 import 'package:meupatrimonio/pages/reserva/itemReserva.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
+import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class ReservasWidget extends StatefulWidget {
@@ -21,6 +21,7 @@ class ReservasWidget extends StatefulWidget {
 class ReservasState extends State<ReservasWidget> {
   final _formatador = NumberFormat.simpleCurrency(locale: 'pt_br');
   List<Reserva> _reservas = [];
+  bool _carregando = false;
 
   @override
   void initState() {
@@ -28,17 +29,13 @@ class ReservasState extends State<ReservasWidget> {
     buscarDados();
   }
 
-  @override
-  void dispose() {
-    ServicoSincronizador(widget.usuario.uid).sincronizarReservasParaRemoto();
-    super.dispose();
-  }
-
   void buscarDados() async {
-    List<Reserva> reservas = await ServicoBancoLocal()
-        .listarReservas(widget.usuario.uid, widget.tipo);
+    _carregando = true;
+    List<Reserva> reservas = await ServicoBancoRemoto(widget.usuario.uid)
+        .listarReservas(widget.tipo);
     setState(() {
       _reservas = reservas;
+      _carregando = false;
     });
   }
 
@@ -51,32 +48,34 @@ class ReservasState extends State<ReservasWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Text(
-          widget.titulo,
-          style: TextStyle(fontSize: 16),
-        )),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  Reserva reserva = Reserva.exemplo();
-                  reserva.tipo = widget.tipo;
-                  reserva.uid = widget.usuario.uid;
-                  return ReservaForm(
-                    reserva: reserva,
-                    callback: buscarDados,
-                  );
-                },
-              ),
-            )
-          },
-        ),
-        body: corpo(context));
+    return _carregando
+        ? Loader()
+        : Scaffold(
+            appBar: AppBar(
+                title: Text(
+              widget.titulo,
+              style: TextStyle(fontSize: 16),
+            )),
+            floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      Reserva reserva = Reserva.exemplo();
+                      reserva.tipo = widget.tipo;
+                      reserva.uid = widget.usuario.uid;
+                      return ReservaForm(
+                        reserva: reserva,
+                        callback: buscarDados,
+                      );
+                    },
+                  ),
+                )
+              },
+            ),
+            body: corpo(context));
   }
 
   Widget cabecalho() {

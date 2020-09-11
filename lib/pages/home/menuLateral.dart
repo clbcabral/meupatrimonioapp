@@ -1,15 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:meupatrimonio/models/usuario.dart';
 import 'package:meupatrimonio/services/autenticacao.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
 
 class MenuLateral extends StatefulWidget {
-  final FirebaseUser usuarioFB;
+  final FirebaseUser usuario;
 
-  MenuLateral({this.usuarioFB});
+  MenuLateral({this.usuario});
 
   @override
   _MenuLateralState createState() => _MenuLateralState();
@@ -17,28 +15,25 @@ class MenuLateral extends StatefulWidget {
 
 class _MenuLateralState extends State<MenuLateral> {
   final ServicoAutenticacao _servico = ServicoAutenticacao();
-  Usuario usuario;
 
   @override
   void initState() {
     super.initState();
-    ServicoBancoLocal().obterUsuario(widget.usuarioFB.uid).then((user) {
-      setState(() => usuario = user);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var usuario = widget.usuario;
     return Drawer(
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(usuario != null ? usuario.nome : ''),
+            accountName: Text(usuario != null ? usuario.displayName ?? '' : ''),
             accountEmail: Text(usuario != null ? usuario.email : ''),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                usuario != null ? usuario.nome[0] : '',
+                usuario != null ? (usuario.displayName ?? ' ')[0] : '',
                 style: TextStyle(
                   fontSize: 40.0,
                   color: Theme.of(context).primaryColor,

@@ -6,7 +6,7 @@ import 'package:meupatrimonio/models/percentual.dart';
 import 'package:meupatrimonio/models/ativo.dart';
 import 'package:meupatrimonio/pages/ativo/formAtivo.dart';
 import 'package:meupatrimonio/pages/ativo/itemAtivo.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
@@ -30,7 +30,6 @@ class AtivosState extends State<AtivosWidget> {
   final _fmtValor = NumberFormat.simpleCurrency(locale: 'pt_br');
   final _fmtPct = NumberFormat.decimalPercentPattern(decimalDigits: 1);
   List<Ativo> _ativos = [];
-  List<Percentual> _percentuais = [];
 
   @override
   void initState() {
@@ -39,22 +38,37 @@ class AtivosState extends State<AtivosWidget> {
   }
 
   void buscarDados() async {
+    _carregando = true;
     List<Future> operacoes = [
-      ServicoBancoLocal().listarAtivos(widget.usuario.uid, widget.tipo),
-      ServicoBancoLocal().listarPercentuais(widget.usuario.uid, widget.tipo),
+      ServicoBancoRemoto(widget.usuario.uid).listarAtivos(widget.tipo),
     ];
     List<dynamic> data = await Future.wait(operacoes);
     setState(() {
       _ativos = data[0];
-      _percentuais = data[1];
+      _carregando = false;
     });
   }
 
   void atualizarCotacoes() async {
     if (widget.tipo != ATIVO_RF) {
-      await ServicoYahooFinance().atualizarCotacoes(_ativos);
+      await ServicoYahooFinance()
+          .atualizarCotacoes(widget.usuario.uid, _ativos);
     }
     buscarDados();
+  }
+
+  List<Percentual> calcularPencentuais(double totalAtivos, double totalPesos) {
+    List<Percentual> percentuais = this._ativos.map((a) {
+      double atual = a.valor() / totalAtivos;
+      double ideal = a.peso / totalPesos;
+      return Percentual(
+          descricao: a.descricao(),
+          atual: atual,
+          ideal: ideal,
+          falta: ideal - atual);
+    }).toList();
+    percentuais.sort((a, b) => b.falta.compareTo(a.falta));
+    return percentuais;
   }
 
   double calcularTotal() {
@@ -75,6 +89,7 @@ class AtivosState extends State<AtivosWidget> {
   Widget build(BuildContext context) {
     double totalAtivos = calcularTotal();
     double totalPesos = calcularPesos();
+    List<Percentual> percentuais = calcularPencentuais(totalAtivos, totalPesos);
     return PaginaComTabsWidget(
       carregando: _carregando,
       drawer: null,
@@ -86,18 +101,18 @@ class AtivosState extends State<AtivosWidget> {
           domainFn: (Percentual p, _) => p.descricao,
           measureFn: (Percentual p, _) => p.atual,
           labelAccessorFn: (Percentual p, _) => '${_fmtPct.format(p.atual)}',
-          data: _percentuais,
+          data: percentuais,
         ),
         seriesIdeal: charts.Series<Percentual, String>(
           id: 'ideal',
           domainFn: (Percentual p, _) => p.descricao,
           measureFn: (Percentual p, _) => p.ideal,
           labelAccessorFn: (Percentual p, _) => '${_fmtPct.format(p.ideal)}',
-          data: _percentuais,
+          data: percentuais,
         ),
       ),
       ondeAportar: OndeAportarWidget(
-        dados: _percentuais,
+        dados: percentuais,
       ),
       botaoAdicionar: FloatingActionButton(
         child: Icon(Icons.add),

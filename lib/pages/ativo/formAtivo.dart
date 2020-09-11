@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meupatrimonio/models/ativo.dart';
-import 'package:meupatrimonio/services/bdLocal.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
+import 'package:meupatrimonio/services/bdRemoto.dart';
 import 'package:meupatrimonio/services/yahooFinance.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
@@ -39,19 +38,13 @@ class AtivoFormState extends State<AtivoForm> {
     _nome = widget.ativo.nome;
     _ticker = widget.ativo.ticker;
     _quantidade = widget.ativo.quantidade.toString();
-    _valor = widget.ativo.valor().toString();
+    _valor = widget.ativo.cotacao.toString();
     _peso = widget.ativo.peso;
     _tipo = widget.ativo.tipo;
     _tickerController.text = widget.ativo.ticker;
     _nomeController.text = widget.ativo.nome;
-    _valorController.text = widget.ativo.valor().toString();
+    _valorController.text = widget.ativo.cotacao.toString();
     _quantidadeController.text = widget.ativo.quantidade.toString();
-  }
-
-  @override
-  void dispose() {
-    ServicoSincronizador(widget.ativo.uid).sincronizarAtivosParaRemoto();
-    super.dispose();
   }
 
   @override
@@ -73,7 +66,8 @@ class AtivoFormState extends State<AtivoForm> {
                           ) ??
                           false;
                       if (confirmou) {
-                        await ServicoBancoLocal().removerAtivo(widget.ativo);
+                        await ServicoBancoRemoto(widget.ativo.uid)
+                            .removerAtivo(widget.ativo);
                         widget.callback();
                         Navigator.pop(context);
                       }
@@ -324,8 +318,8 @@ class AtivoFormState extends State<AtivoForm> {
           uid: widget.ativo.uid,
           tipo: _tipo);
       ehEdicao
-          ? await ServicoBancoLocal().atualizarAtivo(ativo)
-          : await ServicoBancoLocal().adicionarAtivo(ativo);
+          ? await ServicoBancoRemoto(widget.ativo.uid).atualizarAtivo(ativo)
+          : await ServicoBancoRemoto(widget.ativo.uid).adicionarAtivo(ativo);
       Navigator.pop(context);
       widget.callback();
     }
@@ -351,9 +345,8 @@ class AtivoFormState extends State<AtivoForm> {
         uid: widget.ativo.uid,
         tipo: _tipo);
     ehEdicao
-        ? await ServicoBancoLocal().atualizarAtivo(ativo)
-        : await ServicoBancoLocal().adicionarAtivo(ativo);
-    ServicoSincronizador(widget.ativo.uid).sincronizarAtivosParaRemoto();
+        ? await ServicoBancoRemoto(widget.ativo.uid).atualizarAtivo(ativo)
+        : await ServicoBancoRemoto(widget.ativo.uid).adicionarAtivo(ativo);
     Navigator.pop(context);
     widget.callback();
     setState(() {

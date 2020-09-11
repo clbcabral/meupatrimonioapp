@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:meupatrimonio/models/usuario.dart';
 import 'package:meupatrimonio/services/autenticacao.dart';
 import 'package:meupatrimonio/services/bdWrapper.dart';
-import 'package:meupatrimonio/services/sicronizador.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/constantes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
@@ -190,9 +189,6 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                             ),
                           );
                           BancoWrapper(_usuario.uid).adicionarObjetivos();
-                        } else if (!isRegistro) {
-                          await ServicoSincronizador(_usuario.uid)
-                              .sincronizarParaBDLocal();
                         }
                       }
                     },
