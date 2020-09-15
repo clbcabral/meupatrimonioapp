@@ -38,13 +38,13 @@ class AtivosState extends State<AtivosWidget> {
   }
 
   void buscarDados() async {
-    _carregando = true;
-    List<Future> operacoes = [
-      ServicoBancoRemoto(widget.usuario.uid).listarAtivos(widget.tipo),
-    ];
-    List<dynamic> data = await Future.wait(operacoes);
     setState(() {
-      _ativos = data[0];
+      _carregando = true;
+    });
+    List<Ativo> ativos =
+        await ServicoBancoRemoto(widget.usuario.uid).listarAtivos(widget.tipo);
+    setState(() {
+      _ativos = ativos;
       _carregando = false;
     });
   }

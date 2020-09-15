@@ -30,7 +30,9 @@ class ReservasState extends State<ReservasWidget> {
   }
 
   void buscarDados() async {
-    _carregando = true;
+    setState(() {
+      _carregando = true;
+    });
     List<Reserva> reservas = await ServicoBancoRemoto(widget.usuario.uid)
         .listarReservas(widget.tipo);
     setState(() {

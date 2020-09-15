@@ -138,7 +138,7 @@ class ServicoBancoRemoto {
         .fold(0.0, (val, r) => val + (r.valor));
     double total = totalTipoAtivos + totalTipoReservas;
     objetivo.valor = total;
-    objetivo.atual = total / (totalAtivos + totalReservas);
+    objetivo.atual = total / (total == 0 ? 1 : (totalAtivos + totalReservas));
     objetivo.falta = objetivo.ideal - objetivo.atual;
     return objetivo;
   }
