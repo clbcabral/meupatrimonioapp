@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meupatrimonio/pages/sobre/sobre.dart';
 import 'package:meupatrimonio/services/autenticacao.dart';
 import 'package:meupatrimonio/shared/componentes.dart';
 import 'package:meupatrimonio/vals/strings.dart';
@@ -33,7 +34,9 @@ class _MenuLateralState extends State<MenuLateral> {
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                usuario != null ? (usuario.displayName ?? ' ')[0] : '',
+                (usuario != null && usuario.displayName.isNotEmpty)
+                    ? usuario.displayName[0]
+                    : '',
                 style: TextStyle(
                   fontSize: 40.0,
                   color: Theme.of(context).primaryColor,
@@ -42,17 +45,13 @@ class _MenuLateralState extends State<MenuLateral> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text(Strings.meuPatrimonio),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.android),
             title: Text(Strings.sobre),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SobreWidget()),
+              );
             },
           ),
           ListTile(

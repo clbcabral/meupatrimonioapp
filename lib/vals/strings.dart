@@ -63,4 +63,6 @@ class Strings {
   static String senhaConfirmacao = "Senha (confirmação)";
   static String nomeCompleto = "Nome completo";
   static String desejaSair = "Deseja realmente sair?";
+  static String politicaPrivacidade = "Política de Privacidade";
+  static String termosCondicoes = "Termos e Condições";
 }
