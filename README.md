@@ -22,14 +22,18 @@ Na primeira, chamada Consolidado, é possível listar as categorias dos ativos e
 
 Finalizando, a última aba chamada Onde aportar, indica quanto falta percentualmente para que o usuário alcance os objetivos definidos em cada categoria de ativo.
 
-<img src="./docs/images/meupatrimonio01.png" width="250">
-<img src="./docs/images/meupatrimonio02.png" width="250">
-<img src="./docs/images/meupatrimonio03.png" width="250">
+<p align="middle">
+    <img src="./docs/images/meupatrimonio01.png" width="250">
+    <img src="./docs/images/meupatrimonio02.png" width="250">
+    <img src="./docs/images/meupatrimonio03.png" width="250">
+</p>
 
 Além disso, a tela principal dá acesso à configuração dos objetivos percentuais que o usuário deseja alcançar em cada tipo de ativo.
 
-<img src="./docs/images/objetivos01.png" width="250">
-<img src="./docs/images/objetivos02.png" width="250">
+<p align="middle">
+    <img src="./docs/images/objetivos01.png" width="250">
+    <img src="./docs/images/objetivos02.png" width="250">
+</p>
 
 ### Reservas (Emergência, Oportunidade e Valor)
 
@@ -37,9 +41,11 @@ Nesta tela o usuário poderá cadastrar ativos referentes a três tipos de reser
 
 O usuário poderá cadastrar uma descrição da reserva e o quanto ela vale atualmente. Abaixo, segue o exemplo do cadastro de uma Poupança como Reserva de Emergência.
 
-<img src="./docs/images/reserva01.jpg" width="250">
-<img src="./docs/images/reserva02.jpg" width="250">
-<img src="./docs/images/reserva03.jpg" width="250">
-<img src="./docs/images/reserva04.jpg" width="250">
-<img src="./docs/images/reserva05.jpg" width="250">
-<img src="./docs/images/reserva06.jpg" width="250">
+<p align="middle">
+    <img src="./docs/images/reserva01.jpg" width="250">
+    <img src="./docs/images/reserva02.jpg" width="250">
+    <img src="./docs/images/reserva03.jpg" width="250">
+    <img src="./docs/images/reserva04.jpg" width="250">
+    <img src="./docs/images/reserva05.jpg" width="250">
+    <img src="./docs/images/reserva06.jpg" width="250">
+</p>
