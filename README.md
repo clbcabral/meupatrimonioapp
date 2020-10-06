@@ -49,3 +49,24 @@ O usuário poderá cadastrar uma descrição da reserva e o quanto ela vale atua
     <img src="./docs/images/reserva05.jpg" width="250">
     <img src="./docs/images/reserva06.jpg" width="250">
 </p>
+
+### Ativos de Renda Variável (Ações, FIIs, Stocks e REITs)
+
+Nesta tela o usuário poderá cadastrar os ativos de renda variável, informando o seu ticker identificador. Desta forma o aplicativo, obterá automaticamente seu valor e o salvará na ferramenta. É importante frizar que os tickers identificadores seguem o formato adotado pelo [Yahoo! Finance](https://finance.yahoo.com)
+
+Abaixo, segue um exemplo de como cadastrar um ativo do tipo Ação.
+
+<p align="middle">
+    <img src="./docs/images/ativos01.jpg" width="250">
+    <img src="./docs/images/ativos02.jpg" width="250">
+    <img src="./docs/images/ativos03.jpg" width="250">
+    <img src="./docs/images/ativos04.jpg" width="250">
+    <img src="./docs/images/ativos05.jpg" width="250">
+    <img src="./docs/images/ativos06.jpg" width="250">
+</p>
+
+Para atualizar as cotações, o usuário poderá tocar e arrastar listagem dos ativos para baixo. Assim, o aplicativo atualizará os valores de acordo com a cotação atual.
+
+<p align="middle">
+    <img src="./docs/images/ativos07.jpg" width="250">
+</p>
