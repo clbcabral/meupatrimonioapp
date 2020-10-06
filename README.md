@@ -1,16 +1,45 @@
 # Meu Patrimonio App
 
-Simples aplicativo para registro e acompanhamento dos seus ativos financeiros.
+Simples aplicativo para registro e acompanhamento dos seus ativos financeiros. Foi desenvolvido como parte da avaliação da disciplina de Fundamentos de Programação Aplicada no PPGIA, UFRPE.
 
-## Getting Started
+## Objetivo
 
-This project is a starting point for a Flutter application.
+O aplicativo Meu Patrimônio tem como objetivo auxiliar o usuário a monitorar seu patrimônio de ativos financeiros através de uma interface amigável. Além do monitoramento, o usuário também definir seus objetivos e identificar quais ativos necessitam de aportes naquele momento.
 
-A few resources to get you started if this is your first Flutter project:
+## Navegação
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+O aplicativo Meu Patrimônio é composto pelo seguinte fluxo de navegação:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Mapa de navegação](./docs/images/mapa.png)
+
+## Telas
+
+### Meu Patrimônio
+
+Esta é a tela principal do aplicativo. Composta de três abas que mostram os dados consolidados dos ativos financeiros.
+
+Na primeira, chamada Consolidado, é possível listar as categorias dos ativos e os totais acumulados em cada uma. Na segunda, chamada Gráficos, é possível ver na forma de gráficos, a posição atual em cada categoria e qual seria sua posição ideal.
+
+Finalizando, a última aba chamada Onde aportar, indica quanto falta percentualmente para que o usuário alcance os objetivos definidos em cada categoria de ativo.
+
+<img src="./docs/images/meupatrimonio01.png" width="250">
+<img src="./docs/images/meupatrimonio02.png" width="250">
+<img src="./docs/images/meupatrimonio03.png" width="250">
+
+Além disso, a tela principal dá acesso à configuração dos objetivos percentuais que o usuário deseja alcançar em cada tipo de ativo.
+
+<img src="./docs/images/objetivos01.png" width="250">
+<img src="./docs/images/objetivos02.png" width="250">
+
+### Reservas (Emergência, Oportunidade e Valor)
+
+Nesta tela o usuário poderá cadastrar ativos referentes a três tipos de reservas financeiras, a de Emergência, de Oportunidade e a de Valor.
+
+O usuário poderá cadastrar uma descrição da reserva e o quanto ela vale atualmente. Abaixo, segue o exemplo do cadastro de uma Poupança como Reserva de Emergência.
+
+<img src="./docs/images/reserva01.jpg" width="250">
+<img src="./docs/images/reserva02.jpg" width="250">
+<img src="./docs/images/reserva03.jpg" width="250">
+<img src="./docs/images/reserva04.jpg" width="250">
+<img src="./docs/images/reserva05.jpg" width="250">
+<img src="./docs/images/reserva06.jpg" width="250">
