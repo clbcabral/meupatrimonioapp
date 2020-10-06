@@ -43,6 +43,7 @@ class ItemAtivo extends StatelessWidget {
             this.ativo.descricao(),
             style: const TextStyle(),
           ),
+          subtitle: Text('${this.ativo.quantidade} cotas'),
           trailing: Text(
             _fmtValor.format(this.ativo.valor()),
             style: TextStyle(
