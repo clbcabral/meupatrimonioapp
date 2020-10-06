@@ -17,6 +17,14 @@ class ServicoAutenticacao {
     }
   }
 
+  Future recuperarSenha(String email) async {
+    try {
+      return _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      return e.message;
+    }
+  }
+
   Future login(String email, String senha) async {
     try {
       AuthResult result =

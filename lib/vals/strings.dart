@@ -65,4 +65,7 @@ class Strings {
   static String desejaSair = "Deseja realmente sair?";
   static String politicaPrivacidade = "Política de Privacidade";
   static String termosCondicoes = "Termos e Condições";
+  static String recuperarSenha = "Recuperar senha";
+  static String emailRecuperacaoEnviado =
+      "Um e-mail de recuperação será enviado.";
 }

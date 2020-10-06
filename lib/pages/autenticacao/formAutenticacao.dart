@@ -19,6 +19,8 @@ class AutenticacaoForm extends StatefulWidget {
 class _AutenticacaoFormState extends State<AutenticacaoForm> {
   final ServicoAutenticacao _servico = ServicoAutenticacao();
   final _formKey = GlobalKey<FormState>();
+  final _formFieldKey = GlobalKey<FormFieldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
@@ -80,6 +82,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
     bool isRegistro = widget.metodo == MetodoAutenticacao.Registro;
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: title(isRegistro),
@@ -112,6 +115,7 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                   ),
                   SizedBox(height: 10.0),
                   TextFormField(
+                    key: _formFieldKey,
                     controller: _emailController,
                     focusNode: _emailFocus,
                     autovalidate: _email.isNotEmpty,
@@ -190,6 +194,19 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                           );
                           BancoWrapper(_usuario.uid).adicionarObjetivos();
                         }
+                      }
+                    },
+                  ),
+                  RaisedButton(
+                    color: Theme.of(context).bottomAppBarColor,
+                    child: Text(Strings.recuperarSenha),
+                    onPressed: () async {
+                      setState(() => _error = '');
+                      if (_formFieldKey.currentState.validate()) {
+                        _servico.recuperarSenha(_email);
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text(Strings.emailRecuperacaoEnviado),
+                        ));
                       }
                     },
                   ),

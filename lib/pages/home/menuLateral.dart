@@ -29,14 +29,13 @@ class _MenuLateralState extends State<MenuLateral> {
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(usuario != null ? usuario.displayName ?? '' : ''),
+            accountName:
+                Text(usuario != null ? (usuario.displayName ?? '') : ''),
             accountEmail: Text(usuario != null ? usuario.email : ''),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                (usuario != null && usuario.displayName.isNotEmpty)
-                    ? usuario.displayName[0]
-                    : '',
+                usuario != null ? usuario.email[0].toUpperCase() : 'U',
                 style: TextStyle(
                   fontSize: 40.0,
                   color: Theme.of(context).primaryColor,
