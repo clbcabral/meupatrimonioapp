@@ -100,3 +100,21 @@ Abaixo, segue um exemplo de como cadastrar um ativo de Renda Fixa:
     <img src="./docs/images/rf05.jpg" width="250">
     <img src="./docs/images/rf06.jpg" width="250">
 </p>
+
+### Editando ou Excluindo ativos
+
+Todos os ativos possuem a opção de editar ou removê-los. Basta tocar no item correspondente ao ativo para editar, ou na lixeira para excluir.
+
+<p align="middle">
+    <img src="./docs/images/editarexcluir01.jpg" width="250">
+    <img src="./docs/images/editarexcluir02.jpg" width="250">
+    <img src="./docs/images/editarexcluir03.jpg" width="250">
+</p>
+
+## Futuras melhorias
+
+As funcionalidades do aplicativo ainda não limitadas, entretanto abaixo temos algumas melhorias que podem ser desenvolvidas em versões futuras:
+
+- [ ] Importação dos ativos via CEI (Canal Eletrônico do Investidor).
+- [ ] Identificação de eventos fracionários (split, inplit, bonificação, etc).
+- [ ] Aviso de pagamento de dividendos, JCPs, rendimentos, bonificações, etc.
