@@ -1,3 +1,7 @@
+<p align="middle">
+    <img src="./assets/images/icon.png" width="200">
+</p>
+
 # Meu Patrimonio App
 
 Simples aplicativo para registro e acompanhamento dos seus ativos financeiros. Foi desenvolvido como parte da avaliação da disciplina de Fundamentos de Programação Aplicada no PPGIA, UFRPE.
@@ -6,6 +10,8 @@ Simples aplicativo para registro e acompanhamento dos seus ativos financeiros. F
 
 O aplicativo Meu Patrimônio tem como objetivo auxiliar o usuário a monitorar seu patrimônio de ativos financeiros através de uma interface amigável. Além do monitoramento, o usuário também definir seus objetivos e identificar quais ativos necessitam de aportes naquele momento.
 
+O foco do aplicativo não é ficar acompanhando cotação. O aplicativo busca justamente acabar com isso, reduzindo a ansiedade daqueles que acompanham o tempo todo seus ativos. Desta maneira, o usuário deve focar apenas em valor, definir seus objetivos, juntar bons ativos e alcançar os objetivos, com o foco no longo prazo.
+
 ## Navegação
 
 O aplicativo Meu Patrimônio é composto pelo seguinte fluxo de navegação:
@@ -13,6 +19,15 @@ O aplicativo Meu Patrimônio é composto pelo seguinte fluxo de navegação:
 ![Mapa de navegação](./docs/images/mapa.png)
 
 ## Telas
+
+### Login e Cadastro
+
+Nesta tela é possível alternar entre realizar o login no aplicativo ou criar o registro para os novos usuários. Além disso, é possível recuperar os dados de acesso informando o e-mail cadastrado.
+
+<p align="middle">
+    <img src="./docs/images/login01.jpg" width="250">
+    <img src="./docs/images/login02.jpg" width="250">
+</p>
 
 ### Meu Patrimônio
 
@@ -69,4 +84,19 @@ Para atualizar as cotações, o usuário poderá tocar e arrastar listagem dos a
 
 <p align="middle">
     <img src="./docs/images/ativos07.jpg" width="250">
+</p>
+
+### Ativos de Renda Fixa (Tesouro Direto, CDB, LCI, LCA)
+
+Nesta tela o usuário poderá cadastrar seus ativos de renda fixa. Estes ativos não poderão ser atualizados automaticamente, sendo necessário a atualização manual do usuário.
+
+Abaixo, segue um exemplo de como cadastrar um ativo de Renda Fixa:
+
+<p align="middle">
+    <img src="./docs/images/rf01.jpg" width="250">
+    <img src="./docs/images/rf02.jpg" width="250">
+    <img src="./docs/images/rf03.jpg" width="250">
+    <img src="./docs/images/rf04.jpg" width="250">
+    <img src="./docs/images/rf05.jpg" width="250">
+    <img src="./docs/images/rf06.jpg" width="250">
 </p>
