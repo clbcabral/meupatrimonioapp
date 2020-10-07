@@ -197,19 +197,21 @@ class _AutenticacaoFormState extends State<AutenticacaoForm> {
                       }
                     },
                   ),
-                  RaisedButton(
-                    color: Theme.of(context).bottomAppBarColor,
-                    child: Text(Strings.recuperarSenha),
-                    onPressed: () async {
-                      setState(() => _error = '');
-                      if (_formFieldKey.currentState.validate()) {
-                        _servico.recuperarSenha(_email);
-                        _scaffoldKey.currentState.showSnackBar(SnackBar(
-                          content: Text(Strings.emailRecuperacaoEnviado),
-                        ));
-                      }
-                    },
-                  ),
+                  isRegistro
+                      ? Container()
+                      : RaisedButton(
+                          color: Theme.of(context).bottomAppBarColor,
+                          child: Text(Strings.recuperarSenha),
+                          onPressed: () async {
+                            setState(() => _error = '');
+                            if (_formFieldKey.currentState.validate()) {
+                              _servico.recuperarSenha(_email);
+                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                content: Text(Strings.emailRecuperacaoEnviado),
+                              ));
+                            }
+                          },
+                        ),
                   SizedBox(height: 12.0),
                   Text(
                     _error,
