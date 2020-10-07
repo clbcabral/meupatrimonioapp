@@ -186,7 +186,7 @@ class AtivoFormState extends State<AtivoForm> {
           labelText: Strings.descricao,
           hintText: Strings.dicaTesouro,
         ),
-        textCapitalization: TextCapitalization.characters,
+        textCapitalization: TextCapitalization.sentences,
         onChanged: (val) {
           setState(() => _nome = val);
         },

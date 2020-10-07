@@ -55,7 +55,7 @@ class ReservaFormState extends State<ReservaForm> {
             decoration: InputDecoration(
               labelText: Strings.descricao,
             ),
-            textCapitalization: TextCapitalization.words,
+            textCapitalization: TextCapitalization.sentences,
             onChanged: (val) {
               setState(() => _nome = val);
             },
