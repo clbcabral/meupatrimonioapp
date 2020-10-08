@@ -2,6 +2,10 @@
     <img src="./assets/images/icon.png" width="200">
 </p>
 
+<a href="https://play.google.com/store/apps/details?id=com.github.clbcabral.meupatrimonio">
+    <img src="./docs/images/google-play-badge.png" width="180">
+</a>
+
 # Meu Patrimonio App
 
 Simples aplicativo para registro e acompanhamento dos seus ativos financeiros. Foi desenvolvido como parte da avaliação da disciplina de Fundamentos de Programação Aplicada no PPGIA, UFRPE.
