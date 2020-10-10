@@ -12,7 +12,7 @@ Simples aplicativo para registro e acompanhamento dos seus ativos financeiros. F
 
 ## Objetivo
 
-O aplicativo Meu Patrimônio tem como objetivo auxiliar o usuário a monitorar seu patrimônio de ativos financeiros através de uma interface amigável. Além do monitoramento, o usuário também definir seus objetivos e identificar quais ativos necessitam de aportes naquele momento.
+O aplicativo Meu Patrimônio tem como objetivo auxiliar o usuário a monitorar seu patrimônio de ativos financeiros através de uma interface amigável. Além do monitoramento, o usuário também pode definir seus objetivos e identificar quais ativos necessitam de aportes naquele momento.
 
 O foco do aplicativo não é ficar acompanhando cotação. O aplicativo busca justamente acabar com isso, reduzindo a ansiedade daqueles que acompanham o tempo todo seus ativos. Desta maneira, o usuário deve focar apenas em valor, definir seus objetivos, juntar bons ativos e alcançar os objetivos, com o foco no longo prazo.
 
