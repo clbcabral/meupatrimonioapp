@@ -16,6 +16,10 @@ O aplicativo Meu Patrimônio tem como objetivo auxiliar o usuário a monitorar s
 
 O foco do aplicativo não é ficar acompanhando cotação. O aplicativo busca justamente acabar com isso, reduzindo a ansiedade daqueles que acompanham o tempo todo seus ativos. Desta maneira, o usuário deve focar apenas em valor, definir seus objetivos, juntar bons ativos e alcançar os objetivos, com o foco no longo prazo.
 
+## Tutorial de Uso
+
+[![Tutorial Aplicativo Meu Patrimônio](https://img.youtube.com/vi/Kb_QYJYM43s/0.jpg)](https://youtu.be/Kb_QYJYM43s "Tutorial Aplicativo Meu Patrimônio")
+
 ## Navegação
 
 O aplicativo Meu Patrimônio é composto pelo seguinte fluxo de navegação:
