@@ -29,10 +29,11 @@ class ServicoYahooFinance {
         this.getTickersInfo(tickers),
       ];
       List<dynamic> response = await Future.wait(operacoes);
-      double dolar = response[0]['quoteResponse']['result'][0]['bid'];
+      double dolar =
+          response[0]['quoteResponse']['result'][0]['regularMarketPrice'];
       List resultados = response[1]['quoteResponse']['result'];
       resultados.forEach((element) {
-        double cotacao = element['bid'];
+        double cotacao = element['regularMarketPrice'];
         Ativo ativo =
             ativos[ativos.indexWhere((e) => e.ticker == element['symbol'])];
         ativo.cotacao = ativo.ehAtivoDolarizado() ? cotacao * dolar : cotacao;

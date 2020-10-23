@@ -307,11 +307,13 @@ class AtivoFormState extends State<AtivoForm> {
       _chaveScaffold.currentState.showSnackBar(snack);
     } else {
       Map dados = resultado[0];
-      double dolar = widget.ativo.ehAtivoDolarizado() ? resultado[1]['bid'] : 1;
+      double dolar = widget.ativo.ehAtivoDolarizado()
+          ? resultado[1]['regularMarketPrice']
+          : 1;
       Ativo ativo = Ativo(
           id: widget.ativo.id.isNotEmpty ? widget.ativo.id : Uuid().v1(),
           nome: dados['longName'],
-          cotacao: dados['bid'] * dolar,
+          cotacao: dados['regularMarketPrice'] * dolar,
           quantidade: double.parse(_quantidade),
           ticker: _ticker,
           peso: _peso,
